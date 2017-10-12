@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "datadog_trust_relationship" {
+data "aws_iam_policy_document" "trust_relationship" {
   "statement" {
     sid     = "DatadogAWSTrustRelationship"
     effect  = "Allow"
@@ -14,21 +14,13 @@ data "aws_iam_policy_document" "datadog_trust_relationship" {
 
     condition {
       test     = "StringEquals"
-      values   = ["${var.datadog_integration_key}"]
+      values   = ["${var.datadog_external_id}"]
       variable = "sts:ExternalId"
     }
   }
 }
 
-module "datadog_rds_label" {
-  source    = "git::https://github.com/cloudposse/tf_label.git?ref=0.2.1"
-  namespace = "${var.namespace}"
-  stage     = "${var.stage}"
-  name      = "${var.name}"
-  attribute = ["rds"]
-}
-
-data "aws_iam_policy_document" "datadog_integration_rds" {
+data "aws_iam_policy_document" "integration_rds" {
   statement {
     sid    = "DatadogAWSIntegration"
     effect = "Allow"
@@ -54,17 +46,27 @@ data "aws_iam_policy_document" "datadog_integration_rds" {
   }
 }
 
-resource "aws_iam_policy" "datadog_integration_rds" {
-  name   = "${module.datadog_rds_label.id}"
-  policy = "${data.aws_iam_policy_document.datadog_integration_rds.json}"
+module "rds_label" {
+  source    = "git::https://github.com/cloudposse/tf_label.git?ref=0.2.1"
+  namespace = "${var.namespace}"
+  stage     = "${var.stage}"
+  name      = "${var.name}"
+  attributes = ["${compact(concat(var.attributes, list("rds")))}"]
 }
 
-resource "aws_iam_role" "datadog_trust_relationship" {
-  name               = "${module.datadog_rds_label.id}"
-  assume_role_policy = "${data.aws_iam_policy_document.datadog_trust_relationship.json}"
+resource "aws_iam_role" "default" {
+  name               = "${module.rds_label.id}"
+  assume_role_policy = "${data.aws_iam_policy_document.trust_relationship.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "ap_infra_datadog_integration" {
-  role       = "${aws_iam_role.datadog_trust_relationship.name}"
-  policy_arn = "${aws_iam_policy.datadog_integration_rds.arn}"
+resource "aws_iam_policy" "rds" {
+  count  = "${contains(var.integrations, "RDS")}"
+  name   = "${module.rds_label.id}"
+  policy = "${data.aws_iam_policy_document.integration_rds.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "rds" {
+  count      = "${contains(var.integrations, "RDS")}"
+  role       = "${aws_iam_role.default.name}"
+  policy_arn = "${aws_iam_policy.rds.arn}"
 }
