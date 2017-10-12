@@ -32,6 +32,11 @@ module "datadog_aws_integration" {
 | datadog_aws_account_id         | `464622532012`   | Datadog’s AWS account ID                                                                 | No         |
 | integrations                   | []               | List of AWS Services to integration with the DataDog service (e.g EC2, RDS, Billing ...) | Yes        |
 
+## Outputs
+
+| Name                | Decription                                                        |
+|:--------------------|:------------------------------------------------------------------|
+| `role`              | Name of AWS IAM Role associated with creating integration         |
 
 ## Help
 

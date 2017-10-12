@@ -46,16 +46,24 @@ data "aws_iam_policy_document" "integration_rds" {
   }
 }
 
+module "role_label" {
+  source     = "git::https://github.com/cloudposse/tf_label.git?ref=0.2.1"
+  namespace  = "${var.namespace}"
+  stage      = "${var.stage}"
+  name       = "${var.name}"
+  attributes = ["${var.attributes}"]
+}
+
 module "rds_label" {
-  source    = "git::https://github.com/cloudposse/tf_label.git?ref=0.2.1"
-  namespace = "${var.namespace}"
-  stage     = "${var.stage}"
-  name      = "${var.name}"
+  source     = "git::https://github.com/cloudposse/tf_label.git?ref=0.2.1"
+  namespace  = "${var.namespace}"
+  stage      = "${var.stage}"
+  name       = "${var.name}"
   attributes = ["${compact(concat(var.attributes, list("rds")))}"]
 }
 
 resource "aws_iam_role" "default" {
-  name               = "${module.rds_label.id}"
+  name               = "${module.role_label.id}"
   assume_role_policy = "${data.aws_iam_policy_document.trust_relationship.json}"
 }
 
