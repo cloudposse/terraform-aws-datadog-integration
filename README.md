@@ -1,8 +1,10 @@
 # terraform-datadog-integration-aws
 Terraform Module for integration DataDog to AWS
 
+
+
 ## Usage
-At the moment the module support RDS integration only. It will be modified as necessary to integrate the remaining services.
+Note: At the moment the module supports `RDS integration only`. It will be modified as necessary to integrate the needful services.
 
 Include this module in your existing terraform code:
 
@@ -28,7 +30,7 @@ module "datadog_aws_integration" {
 | tags                           | {}               | Additional tags  (e.g. `map("BusinessUnit","XYZ")`                                       | No         |
 | datadog_external_id            | ``               | External Id of the DataDog service                                                       | Yes        |
 | datadog_aws_account_id         | `464622532012`   | Datadog’s AWS account ID                                                                 | No         |
-| integrations                   | []               | List of AWS Services to integration with the DataDog service (e.g EC2, RDS, Billing ...) | No         |
+| integrations                   | []               | List of AWS Services to integration with the DataDog service (e.g EC2, RDS, Billing ...) | Yes        |
 
 
 ## Help
@@ -96,7 +98,7 @@ or [hire us][hire] to help build your next cloud-platform.
 ### Contributors
 
 | [![Erik Osterman][erik_img]][erik_web]<br/>[Erik Osterman][erik_web]        | [![Igor Rodionov][igor_img]][igor_web]<br/>[Igor Rodionov][igor_web] | [![Andriy Knysh][andriy_img]][andriy_web]<br/>[Andriy Knysh][andriy_web]  | [![Sergey Vasilyev][sergey_img]][sergey_web]<br/>[Sergey Vasilyev][sergey_web] | [![Konstantin B][konstantin_img]][konstantin_web]<br/>[Konstantin B][konstantin_web] | [![Valeriy][valeriy_img]][valeriy_web]<br/>[Valeriy][valeriy_web]      | [![Vladimir][vladimir_img]][vladimir_web]<br/>[Vladimir][vladimir_web] |
-|-- ------------------------------------------------------------------------- | ------------------------------------------------------------------   | ------------------------------------------------------------------------- | ----------------------------------------------------------------------         | ----------------------------------------------------------------------               | ---------------------------------------------------------------------- | -------------------------------------------------------------------- --|
+|---------------------------------------------------------------------------- | ------------------------------------------------------------------   | ------------------------------------------------------------------------- | ----------------------------------------------------------------------         | ----------------------------------------------------------------------               | ---------------------------------------------------------------------- | -----------------------------------------------------------------------|
 
   [erik_img]: http://s.gravatar.com/avatar/88c480d4f73b813904e00a5695a454cb?s=144
   [erik_web]: https://github.com/osterman/
