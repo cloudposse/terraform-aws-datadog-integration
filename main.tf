@@ -59,14 +59,18 @@ resource "aws_iam_role" "default" {
   assume_role_policy = "${data.aws_iam_policy_document.trust_relationship.json}"
 }
 
+locals {
+  rds_count = "${contains(var.integrations, "RDS") ? 1 : 0}"
+}
+
 resource "aws_iam_policy" "rds" {
-  count  = "${contains(var.integrations, "RDS")}"
+  count  = "${local.rds_count}"
   name   = "${module.rds_label.id}"
   policy = "${data.aws_iam_policy_document.integration_rds.json}"
 }
 
 resource "aws_iam_role_policy_attachment" "rds" {
-  count      = "${contains(var.integrations, "RDS")}"
+  count      = "${local.rds_count}"
   role       = "${aws_iam_role.default.name}"
   policy_arn = "${aws_iam_policy.rds.arn}"
 }
