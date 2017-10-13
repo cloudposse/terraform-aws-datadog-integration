@@ -1,10 +1,10 @@
-# terraform-datadog-integration-aws
-Terraform Module for integration DataDog to AWS
+# terraform-datadog-aws-integration
+Terraform Module for integration DataDog with AWS
 
 
 
 ## Usage
-Note: At the moment the module supports `RDS integration only`. It will be modified as necessary to integrate the needful services.
+**Note:** At the moment the module supports `RDS integration only`. It will be modified as necessary to integrate the needful services.
 
 Include this module in your existing terraform code:
 

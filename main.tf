@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "trust_relationship" {
   }
 }
 
-data "aws_iam_policy_document" "integration_rds" {
+data "aws_iam_policy_document" "rds" {
   statement {
     sid    = "DatadogAWSIntegration"
     effect = "Allow"
@@ -68,13 +68,13 @@ resource "aws_iam_role" "default" {
 }
 
 locals {
-  rds_count = "${contains(var.integrations, "RDS") ? 1 : 0}"
+  rds_count = "${contains(split(",", lower(join(",", var.integrations))), "rds") ? 1 : 0}"
 }
 
 resource "aws_iam_policy" "rds" {
   count  = "${local.rds_count}"
   name   = "${module.rds_label.id}"
-  policy = "${data.aws_iam_policy_document.integration_rds.json}"
+  policy = "${data.aws_iam_policy_document.rds.json}"
 }
 
 resource "aws_iam_role_policy_attachment" "rds" {
