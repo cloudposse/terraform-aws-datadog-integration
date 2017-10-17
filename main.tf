@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "rds" {
 }
 
 module "role_label" {
-  source     = "git::https://github.com/cloudposse/erraform-null-label.git?ref=0.2.1"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.2.1"
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
@@ -55,7 +55,7 @@ module "role_label" {
 }
 
 module "rds_label" {
-  source     = "git::https://github.com/cloudposse/erraform-null-label.git?ref=0.2.1"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.2.1"
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
