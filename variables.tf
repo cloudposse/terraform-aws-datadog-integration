@@ -33,7 +33,6 @@ variable "datadog_external_id" {
 }
 
 variable "datadog_aws_account_id" {
-  default     = "464622532012"
   description = "Datadog’s AWS account ID"
 }
 

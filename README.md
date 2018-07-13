@@ -56,7 +56,7 @@ Available targets:
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | attributes | Additional attributes (e.g. `policy` or `role`) | list | `<list>` | no |
-| datadog_aws_account_id | Datadog’s AWS account ID | string | `464622532012` | no |
+| datadog_aws_account_id | Datadog’s AWS account ID | string | - | yes |
 | datadog_external_id | External Id of the DataDog service | string | - | yes |
 | delimiter | Delimiter to be used between `name`, `namespace`, `stage`, etc. | string | `-` | no |
 | integrations | List of AWS Services to integration with the DataDog service (e.g EC2, RDS, Billing ...) | list | - | yes |
