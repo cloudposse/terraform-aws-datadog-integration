@@ -1,0 +1,67 @@
+---
+#
+# This is the canonical configuration for the `README.md`
+# Run `make readme` to rebuild the `README.md`
+#
+
+# Name of this project
+name: terraform-aws-datadog-integration
+
+# Logo for this project
+#logo: docs/logo.png
+
+# License of this project
+license: "APACHE2"
+
+# Canonical GitHub repo
+github_repo: cloudposse/terraform-aws-datadog-integration
+
+# Badges to display
+badges:
+  - name: "Build Status"
+    image: "https://travis-ci.org/cloudposse/terraform-aws-datadog-integration.svg?branch=master"
+    url: "https://travis-ci.org/cloudposse/terraform-aws-datadog-integration"
+  - name: "Latest Release"
+    image: "https://img.shields.io/github/release/cloudposse/terraform-aws-datadog-integration.svg"
+    url: "https://github.com/cloudposse/terraform-aws-datadog-integration/releases/latest"
+  - name: "Slack Community"
+    image: "https://slack.cloudposse.com/badge.svg"
+    url: "https://slack.cloudposse.com"
+
+related:
+  - name: "fluentd-datadog-logs"
+    description: "Dockerfile that implements fluentd log forwarding to datadog's new log service"
+    url: "https://github.com/cloudposse/fluentd-datadog-logs"
+  - name: "terraform-datadog-monitor"
+    description: "Terraform module to provision Standard System Monitors (cpu, memory, swap, io, etc) in Datadog"
+    url: "https://github.com/cloudposse/terraform-datadog-monitor"
+
+# Short description of this project
+description: |-
+  Terraform Module for integration DataDog with AWS
+
+# How to use this project
+usage: |-
+  **Note:** At the moment the module supports `RDS integration only`. It will be modified as necessary to integrate the needful services.
+
+  Include this module in your existing terraform code:
+
+  ```hcl
+  module "datadog_aws_integration" {
+    source = "git::https://github.com/cloudposse/terraform-datadog-aws-integration.git?ref=master"
+    namespace                  = "${var.namespace}"
+    name                       = "${var.name}"
+    stage                      = "${var.stage}"
+    datadog_external_id        = "dfae1fe3434..."
+    integrations               = ["RDS", "S3", ...]
+  }
+  ```
+
+include:
+  - "docs/targets.md"
+  - "docs/terraform.md"
+
+# Contributors to this project
+contributors:
+  - name: "Sergey Vasilyev"
+    github: "s2504s"
