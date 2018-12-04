@@ -7,6 +7,17 @@
 # Name of this project
 name: terraform-aws-datadog-integration
 
+# Tags of this project
+tags:
+  - aws
+  - terraform
+  - logging
+  - datadog
+
+# Categories of this project
+categories:
+  - terraform-logging
+
 # Logo for this project
 #logo: docs/logo.png
 
