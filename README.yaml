@@ -11,12 +11,13 @@ name: terraform-aws-datadog-integration
 tags:
   - aws
   - terraform
+  - terraform-modules
   - logging
   - datadog
 
 # Categories of this project
 categories:
-  - terraform-logging
+  - terraform-modules/logging
 
 # Logo for this project
 #logo: docs/logo.png
