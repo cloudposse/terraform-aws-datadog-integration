@@ -1,5 +1,6 @@
 variable "name" {
   description = "The Name of the application or solution  (e.g. `bastion` or `portal`)"
+  default     = "datadog"
 }
 
 variable "namespace" {
@@ -34,6 +35,7 @@ variable "datadog_external_id" {
 
 variable "datadog_aws_account_id" {
   description = "Datadog’s AWS account ID"
+  default     = "464622532012"
 }
 
 variable "integrations" {
