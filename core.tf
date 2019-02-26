@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "core" {
 }
 
 module "core_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.2.1"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.6.2"
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
@@ -38,5 +38,5 @@ resource "aws_iam_policy" "core" {
 resource "aws_iam_role_policy_attachment" "core" {
   count      = "${local.core_count}"
   role       = "${aws_iam_role.default.name}"
-  policy_arn = "${aws_iam_policy.core.arn}"
+  policy_arn = "${join("", aws_iam_policy.core.*.arn)}"
 }
