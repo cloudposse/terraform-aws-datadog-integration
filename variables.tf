@@ -40,5 +40,5 @@ variable "datadog_aws_account_id" {
 
 variable "integrations" {
   type        = "list"
-  description = "List of AWS Services to integration with the DataDog service (e.g EC2, RDS, Billing ...)"
+  description = "List of AWS integration permissions sets to apply (all, core, rds)"
 }
