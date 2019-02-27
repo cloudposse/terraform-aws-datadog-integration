@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "rds" {
       "rds:List*",
       "tag:getResources",
       "tag:getTagKeys",
-      "tag:getTagValues"
+      "tag:getTagValues",
     ]
 
     resources = ["*"]

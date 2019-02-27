@@ -4,13 +4,13 @@ data "aws_iam_policy_document" "core" {
     effect = "Allow"
 
     actions = [
-        "cloudwatch:Get*",
-        "cloudwatch:List*",
-        "ec2:Describe*",
-        "support:*",
-        "tag:GetResources",
-        "tag:GetTagKeys",
-        "tag:GetTagValues"
+      "cloudwatch:Get*",
+      "cloudwatch:List*",
+      "ec2:Describe*",
+      "support:*",
+      "tag:GetResources",
+      "tag:GetTagKeys",
+      "tag:GetTagValues",
     ]
 
     resources = ["*"]
