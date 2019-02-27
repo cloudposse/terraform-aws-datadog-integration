@@ -1,5 +1,6 @@
 variable "name" {
   description = "The Name of the application or solution  (e.g. `bastion` or `portal`)"
+  default     = "datadog"
 }
 
 variable "namespace" {
@@ -10,33 +11,22 @@ variable "stage" {
   description = "Stage (e.g. `prod`, `dev`, `staging`)"
 }
 
-variable "delimiter" {
-  type        = "string"
-  default     = "-"
-  description = "Delimiter to be used between `name`, `namespace`, `stage`, etc."
-}
-
 variable "attributes" {
   type        = "list"
   default     = []
-  description = "Additional attributes (e.g. `policy` or `role`)"
-}
-
-variable "tags" {
-  type        = "map"
-  default     = {}
-  description = "Additional tags (e.g. `map('BusinessUnit','XYZ')`)"
+  description = "Additional attributes (e.g. `1`)"
 }
 
 variable "datadog_external_id" {
-  description = "External Id of the DataDog service"
+  description = "External Id of the Datadog service"
 }
 
 variable "datadog_aws_account_id" {
   description = "Datadog’s AWS account ID"
+  default     = "464622532012"
 }
 
 variable "integrations" {
   type        = "list"
-  description = "List of AWS Services to integration with the DataDog service (e.g EC2, RDS, Billing ...)"
+  description = "List of AWS permission names to apply for different integrations (`all`, `core`, `rds`)"
 }
