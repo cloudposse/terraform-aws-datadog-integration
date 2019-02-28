@@ -18,11 +18,11 @@ variable "attributes" {
 }
 
 variable "datadog_external_id" {
-  description = "External Id of the Datadog service"
+  description = "AWS External ID for this Datadog integration"
 }
 
 variable "datadog_aws_account_id" {
-  description = "Datadog’s AWS account ID"
+  description = "The AWS account ID Datadog's integration servers use for all integrations"
   default     = "464622532012"
 }
 

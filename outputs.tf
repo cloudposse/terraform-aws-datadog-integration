@@ -1,4 +1,4 @@
 output "role" {
   value       = "${aws_iam_role.default.name}"
-  description = "Name of AWS IAM Role associated with creating integration"
+  description = "Name of the AWS IAM Role for Datadog to use for this integration"
 }

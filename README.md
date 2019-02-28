@@ -42,7 +42,31 @@ We literally have [*hundreds of terraform modules*][terraform_modules] that are 
 
 ## Usage
 
-**Note:** At the moment the module supports `RDS integration only`. It will be modified as necessary to integrate the needful services.
+**Note:** At the moment this module supports a limited set of IAM policies to support Datadog integrations. More can be added as needed.
+
+### Structure
+
+This module follows [Datadog's documentation](https://docs.datadoghq.com/integrations/amazon_web_services/)
+by supporting a `core` integration which is the minimum set of permissions needed for any Datadog integration,
+plus an additional integration per service which contains the additional permissions Datadog has documented
+are required for that service.
+
+To make things easier, this module also implements an `all` integration which includes all the permissions Datadog
+lists under "All Permissions" as the maximal set of permissions required, so you can just set
+`integrations = ["all"]` and be done.
+
+**Note:** For legacy reasons, the `RDS` policy is retained to be a stand-alone policy for supporting Datadog's RDS integration.
+It is not a good example to follow. Use [`Lambda`](lambda.tf) as your example for adding more integrations.
+
+### Installation
+
+For security, Datadog uses an [AWS External ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html)
+when assuming the role this module creates. To configure this:
+1. Go to Datadog's [integration control panel](https://app.datadoghq.com/account/settings#integrations/amazon_web_services)
+   and begin the integration process by adding an account, at which point Datadog will generate the `AWS External ID`.
+1. Set the Terraform variable `datadog_external_id` to the AWS External ID as a string.
+1. Apply the Terraform plan to create the role, and note the name of the role created.
+1. Enter the name of the created role in Datadog's integration control panel where it says "AWS Role name:".
 
 Include this module in your existing terraform code:
 
@@ -53,7 +77,7 @@ module "datadog_aws_integration" {
   name                       = "${var.name}"
   stage                      = "${var.stage}"
   datadog_external_id        = "dfae1fe3434..."
-  integrations               = ["RDS", "S3", ...]
+  integrations               = ["core", "Lambda", ...]
 }
 ```
 
@@ -72,26 +96,23 @@ Available targets:
   lint                                Lint terraform code
 
 ```
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| attributes | Additional attributes (e.g. `policy` or `role`) | list | `<list>` | no |
-| datadog_aws_account_id | Datadog’s AWS account ID | string | - | yes |
-| datadog_external_id | External Id of the DataDog service | string | - | yes |
-| delimiter | Delimiter to be used between `name`, `namespace`, `stage`, etc. | string | `-` | no |
-| integrations | List of AWS Services to integration with the DataDog service (e.g EC2, RDS, Billing ...) | list | - | yes |
-| name | The Name of the application or solution  (e.g. `bastion` or `portal`) | string | - | yes |
+| attributes | Additional attributes (e.g. `1`) | list | `<list>` | no |
+| datadog_aws_account_id | The AWS account ID Datadog's integration servers use for all integrations | string | `464622532012` | no |
+| datadog_external_id | AWS External ID for this Datadog integration | string | - | yes |
+| integrations | List of AWS permission names to apply for different integrations (`all`, `core`, `rds`) | list | - | yes |
+| name | The Name of the application or solution  (e.g. `bastion` or `portal`) | string | `datadog` | no |
 | namespace | Namespace (e.g. `cp` or `cloudposse`) | string | - | yes |
 | stage | Stage (e.g. `prod`, `dev`, `staging`) | string | - | yes |
-| tags | Additional tags (e.g. `map('BusinessUnit','XYZ')`) | map | `<map>` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| role | Name of AWS IAM Role associated with creating integration |
+| role | Name of the AWS IAM Role for Datadog to use for this integration |
 
 
 
@@ -174,7 +195,7 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
 ## Copyright
 
-Copyright © 2017-2018 [Cloud Posse, LLC](https://cpco.io/copyright)
+Copyright © 2017-2019 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 
