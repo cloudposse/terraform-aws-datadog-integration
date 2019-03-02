@@ -1,7 +1,8 @@
 ---
 #
 # This is the canonical configuration for the `README.md`
-# Run `make readme` to rebuild the `README.md`
+# Run `make init`, `make readme/deps` to load all the dependencies
+# then run `make readme` as needed to rebuild the `README.md`
 #
 
 # Name of this project
@@ -54,7 +55,31 @@ description: |-
 
 # How to use this project
 usage: |-
-  **Note:** At the moment the module supports `RDS integration only`. It will be modified as necessary to integrate the needful services.
+  **Note:** At the moment this module supports a limited set of IAM policies to support Datadog integrations. More can be added as needed.
+
+  ### Structure
+
+  This module follows [Datadog's documentation](https://docs.datadoghq.com/integrations/amazon_web_services/)
+  by supporting a `core` integration which is the minimum set of permissions needed for any Datadog integration,
+  plus an additional integration per service which contains the additional permissions Datadog has documented
+  are required for that service.
+
+  To make things easier, this module also implements an `all` integration which includes all the permissions Datadog
+  lists under "All Permissions" as the maximal set of permissions required, so you can just set
+  `integrations = ["all"]` and be done.
+
+  **Note:** For legacy reasons, the `RDS` policy is retained to be a stand-alone policy for supporting Datadog's RDS integration.
+  It is not a good example to follow. Use [`Lambda`](lambda.tf) as your example for adding more integrations.
+
+  ### Installation
+
+  For security, Datadog uses an [AWS External ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html)
+  when assuming the role this module creates. To configure this:
+  1. Go to Datadog's [integration control panel](https://app.datadoghq.com/account/settings#integrations/amazon_web_services)
+     and begin the integration process by adding an account, at which point Datadog will generate the `AWS External ID`.
+  1. Set the Terraform variable `datadog_external_id` to the AWS External ID as a string.
+  1. Apply the Terraform plan to create the role, and note the name of the role created.
+  1. Enter the name of the created role in Datadog's integration control panel where it says "AWS Role name:".
 
   Include this module in your existing terraform code:
 
@@ -65,7 +90,7 @@ usage: |-
     name                       = "${var.name}"
     stage                      = "${var.stage}"
     datadog_external_id        = "dfae1fe3434..."
-    integrations               = ["RDS", "S3", ...]
+    integrations               = ["core", "Lambda", ...]
   }
   ```
 
