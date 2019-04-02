@@ -57,6 +57,7 @@ data "aws_iam_policy_document" "all" {
       "s3:GetBucketLocation",
       "s3:GetBucketNotification",
       "s3:GetBucketTagging",
+      "s3:GetObject",
       "s3:ListAllMyBuckets",
       "s3:PutBucketNotification",
       "ses:Get*",
