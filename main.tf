@@ -1,5 +1,5 @@
 data "aws_iam_policy_document" "trust_relationship" {
-  "statement" {
+  statement {
     sid     = "DatadogAWSTrustRelationship"
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
