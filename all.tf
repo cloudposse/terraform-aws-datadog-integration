@@ -80,7 +80,7 @@ module "all_label" {
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
-  attributes = ["${compact(concat(var.attributes, list("all")))}"]
+  attributes = compact(concat(var.attributes, list("all")))
 }
 
 locals {

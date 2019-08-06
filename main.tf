@@ -25,7 +25,7 @@ module "role_label" {
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
-  attributes = ["${var.attributes}"]
+  attributes = var.attributes
 }
 
 resource "aws_iam_role" "default" {

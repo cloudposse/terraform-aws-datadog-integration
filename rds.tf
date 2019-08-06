@@ -29,7 +29,7 @@ module "rds_label" {
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
-  attributes = ["${compact(concat(var.attributes, list("rds")))}"]
+  attributes = compact(concat(var.attributes, list("rds")))
 }
 
 locals {

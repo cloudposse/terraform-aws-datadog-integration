@@ -22,7 +22,7 @@ module "core_label" {
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
-  attributes = ["${compact(concat(var.attributes, list("core")))}"]
+  attributes = compact(concat(var.attributes, list("core")))
 }
 
 locals {

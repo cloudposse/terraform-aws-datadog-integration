@@ -20,7 +20,7 @@ module "lambda_label" {
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
-  attributes = ["${compact(concat(var.attributes, list("lambda")))}"]
+  attributes = compact(concat(var.attributes, list("lambda")))
 }
 
 locals {
