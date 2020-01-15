@@ -77,24 +77,24 @@ data "aws_iam_policy_document" "all" {
 
 module "all_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.16/master"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  name       = "${var.name}"
-  attributes = ["${compact(concat(var.attributes, list("all")))}"]
+  namespace  = var.namespace
+  stage      = var.stage
+  name       = var.name
+  attributes = [compact(concat(var.attributes, list("all")))]
 }
 
 locals {
-  all_count = "${contains(split(",", lower(join(",", var.integrations))), "all") ? 1 : 0}"
+  all_count = contains(split(",", lower(join(",", var.integrations))), "all") ? 1 : 0
 }
 
 resource "aws_iam_policy" "all" {
-  count  = "${local.all_count}"
-  name   = "${module.all_label.id}"
-  policy = "${data.aws_iam_policy_document.all.json}"
+  count  = local.all_count
+  name   = module.all_label.id
+  policy = data.aws_iam_policy_document.all.json
 }
 
 resource "aws_iam_role_policy_attachment" "all" {
-  count      = "${local.all_count}"
-  role       = "${aws_iam_role.default.name}"
-  policy_arn = "${join("", aws_iam_policy.all.*.arn)}"
+  count      = local.all_count
+  role       = aws_iam_role.default.name
+  policy_arn = join("", aws_iam_policy.all.*.arn)
 }
