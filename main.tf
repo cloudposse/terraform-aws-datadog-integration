@@ -21,7 +21,7 @@ data "aws_iam_policy_document" "trust_relationship" {
 }
 
 module "role_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.6.2"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.16/master"
   namespace  = "${var.namespace}"
   stage      = "${var.stage}"
   name       = "${var.name}"
