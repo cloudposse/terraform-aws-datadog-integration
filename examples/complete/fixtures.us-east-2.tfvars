@@ -13,3 +13,5 @@ datadog_api_key = "test"
 datadog_app_key = "test"
 
 integrations = ["all"]
+
+datadog_integration_aws_enabled = false

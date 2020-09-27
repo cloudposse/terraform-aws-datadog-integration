@@ -1,6 +1,7 @@
 module "datadog_integration" {
   source = "../../"
 
+  datadog_integration_enabled      = var.datadog_integration_enabled
   datadog_aws_account_id           = var.datadog_aws_account_id
   integrations                     = var.integrations
   filter_tags                      = var.filter_tags
