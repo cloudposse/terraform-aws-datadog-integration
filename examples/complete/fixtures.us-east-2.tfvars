@@ -14,4 +14,5 @@ datadog_app_key = "test"
 
 integrations = ["all"]
 
-datadog_integration_aws_enabled = false
+# Set to false to prevent the tests from failing since Datadog provider requires valid API and App keys
+datadog_integration_enabled = false
