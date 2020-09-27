@@ -25,7 +25,7 @@
 
 -->
 
-Terraform Module for integration DataDog with AWS
+Terraform module to configure [Datadog AWS integration](https://docs.datadoghq.com/api/v1/aws-integration/).
 
 
 ---

@@ -96,6 +96,6 @@ resource "aws_iam_policy" "all" {
 
 resource "aws_iam_role_policy_attachment" "all" {
   count      = local.all_count
-  role       = aws_iam_role.default.name
+  role       = join("", aws_iam_role.default.*.name)
   policy_arn = join("", aws_iam_policy.all.*.arn)
 }

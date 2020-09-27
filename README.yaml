@@ -49,7 +49,7 @@ related:
 
 # Short description of this project
 description: |-
-  Terraform Module for integration DataDog with AWS
+  Terraform module to configure [Datadog AWS integration](https://docs.datadoghq.com/api/v1/aws-integration/).
 
 # How to use this project
 usage: |-
