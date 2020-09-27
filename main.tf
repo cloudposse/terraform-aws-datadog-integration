@@ -14,7 +14,7 @@ resource "datadog_integration_aws" "integration" {
   account_id                       = local.aws_account_id
   role_name                        = module.this.id
   filter_tags                      = var.filter_tags
-  host_tags                        = host_tags
+  host_tags                        = var.host_tags
   excluded_regions                 = var.excluded_regions
   account_specific_namespace_rules = var.account_specific_namespace_rules
 }
