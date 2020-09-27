@@ -30,10 +30,8 @@ license: "APACHE2"
 github_repo: cloudposse/terraform-aws-datadog-integration
 
 # Badges to display
+
 badges:
-  - name: "Build Status"
-    image: "https://travis-ci.org/cloudposse/terraform-aws-datadog-integration.svg?branch=master"
-    url: "https://travis-ci.org/cloudposse/terraform-aws-datadog-integration"
   - name: "Latest Release"
     image: "https://img.shields.io/github/release/cloudposse/terraform-aws-datadog-integration.svg"
     url: "https://github.com/cloudposse/terraform-aws-datadog-integration/releases/latest"
@@ -55,6 +53,11 @@ description: |-
 
 # How to use this project
 usage: |-
+
+  For a complete example, see [examples/complete](examples/complete).
+
+  For automated tests of the complete example using [bats](https://github.com/bats-core/bats-core) and [Terratest](https://github.com/gruntwork-io/terratest) (which tests and deploys the example on AWS), see [test](test).
+
   **Note:** At the moment this module supports a limited set of IAM policies to support Datadog integrations. More can be added as needed.
 
   ### Structure
@@ -67,9 +70,6 @@ usage: |-
   To make things easier, this module also implements an `all` integration which includes all the permissions Datadog
   lists under "All Permissions" as the maximal set of permissions required, so you can just set
   `integrations = ["all"]` and be done.
-
-  **Note:** For legacy reasons, the `RDS` policy is retained to be a stand-alone policy for supporting Datadog's RDS integration.
-  It is not a good example to follow. Use [`Lambda`](lambda.tf) as your example for adding more integrations.
 
   ### Installation
 
@@ -84,15 +84,18 @@ usage: |-
   Include this module in your existing terraform code:
 
   ```hcl
-  module "datadog_aws_integration" {
-    source = "git::https://github.com/cloudposse/terraform-datadog-aws-integration.git?ref=master"
-    namespace                  = "${var.namespace}"
-    name                       = "${var.name}"
-    stage                      = "${var.stage}"
-    datadog_external_id        = "dfae1fe3434..."
-    integrations               = ["core", "Lambda", ...]
-  }
+    module "datadog_integration" {
+      source = "git::https://github.com/cloudposse/terraform-aws-datadog-integration.git?ref=master"
+
+      namespace                  = "eg"
+      stage                      = "test"
+      name                       = "datadog"
+      integrations               = ["all"]
+    }
   ```
+
+examples: |-
+  Review the [complete example](examples/complete) to see how to use this module.
 
 include:
   - "docs/targets.md"
@@ -102,3 +105,7 @@ include:
 contributors:
   - name: "Sergey Vasilyev"
     github: "s2504s"
+  - name: "Erik Osterman"
+    github: "osterman"
+  - name: "Andriy Knysh"
+    github: "aknysh"
