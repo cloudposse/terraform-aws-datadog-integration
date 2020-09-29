@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "all" {
 }
 
 module "all_label" {
-  source = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.19.2"
+  source = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.2"
 
   attributes = compact(concat(module.this.attributes, ["all"]))
 
