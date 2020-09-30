@@ -32,9 +32,3 @@ variable "account_specific_namespace_rules" {
   default     = null
   description = "An object, (in the form {\"namespace1\":true/false, \"namespace2\":true/false} ), that enables or disables metric collection for specific AWS namespaces for this AWS account only"
 }
-
-variable "datadog_integration_enabled" {
-  type        = bool
-  description = "Flag to enable/disable creating Datadog AWS integration. Since Datadog provider requires valid API and App keys, set to `false` in tests to prevent tests from failing"
-  default     = true
-}

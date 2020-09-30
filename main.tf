@@ -10,7 +10,7 @@ locals {
 # https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/integration_aws
 # https://docs.datadoghq.com/api/v1/aws-integration/
 resource "datadog_integration_aws" "integration" {
-  count                            = module.this.enabled && var.datadog_integration_enabled ? 1 : 0
+  count                            = module.this.enabled ? 1 : 0
   account_id                       = local.aws_account_id
   role_name                        = module.this.id
   filter_tags                      = var.filter_tags
