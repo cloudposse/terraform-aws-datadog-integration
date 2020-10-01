@@ -1,3 +1,8 @@
+variable "region" {
+  type        = string
+  description = "AWS region"
+}
+
 variable "datadog_aws_account_id" {
   type        = string
   description = "The AWS account ID Datadog's integration servers use for all integrations"

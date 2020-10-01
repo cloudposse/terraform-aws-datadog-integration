@@ -1,4 +1,6 @@
 data "aws_iam_policy_document" "all" {
+  count = module.this.enabled ? 1 : 0
+
   statement {
     sid    = "DatadogAll"
     effect = "Allow"
@@ -41,9 +43,6 @@ data "aws_iam_policy_document" "all" {
       "lambda:GetPolicy",
       "lambda:List*",
       "lambda:RemovePermission",
-      "logs:Get*",
-      "logs:Describe*",
-      "logs:FilterLogEvents",
       "logs:TestMetricFilter",
       "logs:PutSubscriptionFilter",
       "logs:DeleteSubscriptionFilter",
@@ -63,12 +62,14 @@ data "aws_iam_policy_document" "all" {
       "sns:List*",
       "sns:Publish",
       "sqs:ListQueues",
+      "states:ListStateMachines",
+      "states:DescribeStateMachine",
       "support:*",
       "tag:GetResources",
       "tag:GetTagKeys",
       "tag:GetTagValues",
       "xray:BatchGetTraces",
-      "xray:GetTraceSummaries",
+      "xray:GetTraceSummaries"
     ]
 
     resources = ["*"]
@@ -76,25 +77,25 @@ data "aws_iam_policy_document" "all" {
 }
 
 module "all_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.6.2"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  name       = "${var.name}"
-  attributes = ["${compact(concat(var.attributes, list("all")))}"]
+  source = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.2"
+
+  attributes = compact(concat(module.this.attributes, ["all"]))
+
+  context = module.this.context
 }
 
 locals {
-  all_count = "${contains(split(",", lower(join(",", var.integrations))), "all") ? 1 : 0}"
+  all_count = module.this.enabled && contains(split(",", lower(join(",", var.integrations))), "all") ? 1 : 0
 }
 
 resource "aws_iam_policy" "all" {
-  count  = "${local.all_count}"
-  name   = "${module.all_label.id}"
-  policy = "${data.aws_iam_policy_document.all.json}"
+  count  = local.all_count
+  name   = module.all_label.id
+  policy = join("", data.aws_iam_policy_document.all.*.json)
 }
 
 resource "aws_iam_role_policy_attachment" "all" {
-  count      = "${local.all_count}"
-  role       = "${aws_iam_role.default.name}"
-  policy_arn = "${join("", aws_iam_policy.all.*.arn)}"
+  count      = local.all_count
+  role       = join("", aws_iam_role.default.*.name)
+  policy_arn = join("", aws_iam_policy.all.*.arn)
 }
