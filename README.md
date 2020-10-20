@@ -86,15 +86,6 @@ lists under "All Permissions" as the maximal set of permissions required, so you
 
 ### Installation
 
-For security, Datadog uses an [AWS External ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html)
-when assuming the role this module creates. To configure this:
-
-1. Go to Datadog's [integration control panel](https://app.datadoghq.com/account/settings#integrations/amazon_web_services)
-   and begin the integration process by adding an account, at which point Datadog will generate the `AWS External ID`.
-1. Set the Terraform variable `datadog_external_id` to the AWS External ID as a string.
-1. Apply the Terraform plan to create the role, and note the name of the role created.
-1. Enter the name of the created role in Datadog's integration control panel where it says "AWS Role name:".
-
 Include this module in your existing terraform code:
 
 ```hcl
@@ -107,6 +98,8 @@ Include this module in your existing terraform code:
     integrations               = ["all"]
   }
 ```
+
+The DataDog integration will be linked with your configured datadog account via the provider's `api_key`.
 
 
 
