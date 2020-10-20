@@ -134,9 +134,9 @@ Available targets:
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.0 |
+| terraform | >= 0.12.26 |
 | aws | >= 2.0 |
-| datadog | >= 2.12 |
+| datadog | >= 2.13 |
 | local | >= 1.3 |
 
 ## Providers
@@ -144,7 +144,7 @@ Available targets:
 | Name | Version |
 |------|---------|
 | aws | >= 2.0 |
-| datadog | >= 2.12 |
+| datadog | >= 2.13 |
 
 ## Inputs
 
