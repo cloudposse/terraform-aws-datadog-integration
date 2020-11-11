@@ -17,9 +17,26 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
-          make -C .github update/context
+          if [[ -f context.tf ]]; then
+            echo "context.tf exist! Fetching most recent version to see if there is an update"
+            curl -o context.tf -s https://raw.githubusercontent.com/cloudposse/terraform-null-label/master/exports/context.tf
+            if git diff --no-patch --exit-code context.tf; then
+              echo "No changes detected! Exiting the job..."
+              echo "MAKE_PR=false" >> $GITHUB_ENV
+              exit 0
+            else
+              echo "context.tf file was updated. Proceeding with PR..."
+              echo "MAKE_PR=true" >> $GITHUB_ENV
+              exit 0
+            fi
+          else
+            echo "context.tf does not exist! It is not enough to fetch context.tf, module requires to be updated to support it."
+            echo "MAKE_PR=false" >> $GITHUB_ENV
+            exit 0
+          fi
 
       - name: Create Pull Request
+        if: ${{ success() && env.MAKE_PR == 'true' }}
         uses: cloudposse/actions/github/create-pull-request@0.20.0
         with:
           token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
