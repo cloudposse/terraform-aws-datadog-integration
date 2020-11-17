@@ -1,4 +1,4 @@
-name: "readme-update"
+name: "auto-readme"
 on:
   schedule:
     # Update README.md nightly
