@@ -92,7 +92,7 @@ Include this module in your existing terraform code:
 
 ```hcl
   module "datadog_integration" {
-    source = "cloudposse/datadog-integration/cloudposse"
+    source = "cloudposse/datadog-integration/aws"
     # Cloud Posse recommends pinning module to a specific version
     # version     = "x.x.x"
 
