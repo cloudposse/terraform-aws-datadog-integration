@@ -20,7 +20,8 @@ data "aws_iam_policy_document" "core" {
 }
 
 module "core_label" {
-  source = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.19.2"
+  source  = "cloudposse/label/null"
+  version = "0.19.2"
 
   attributes = compact(concat(module.this.attributes, ["core"]))
 

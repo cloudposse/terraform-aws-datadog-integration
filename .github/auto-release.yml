@@ -11,6 +11,7 @@ version-resolver:
       - 'enhancement'
   patch:
     labels:
+      - 'auto-update'
       - 'patch'
       - 'fix'
       - 'bugfix'
@@ -28,6 +29,9 @@ categories:
       - 'bugfix'
       - 'bug'
       - 'hotfix'
+  - title: '🤖 Automatic Update'
+    labels:
+    - 'auto-update'
 
 change-template: |
   <details>

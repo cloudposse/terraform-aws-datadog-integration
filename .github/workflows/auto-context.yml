@@ -2,7 +2,7 @@ name: "auto-context"
 on:
   schedule:
     # Update context.tf nightly
-    - cron:  '0 0 * * *'
+    - cron:  '0 3 * * *'
 
 jobs:
   update:
@@ -26,12 +26,14 @@ jobs:
               echo "context.tf file was updated. Need to rebuild README.md."
               make init
               make readme/build
+              echo "::set-output name=create_pull_request=true"
             fi
           else
             echo "This module has not yet been updated to support the context.tf pattern! Please update in order to support automatic updates."
           fi
 
       - name: Create Pull Request
+        if: {{ steps.update.outputs.create_pull_request == 'true' }}
         uses: cloudposse/actions/github/create-pull-request@0.20.0
         with:
           token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
