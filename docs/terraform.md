@@ -15,6 +15,25 @@
 | aws | >= 2.0 |
 | datadog | >= 2.13 |
 
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| all_label | cloudposse/label/null | 0.24.1 |
+| core_label | cloudposse/label/null | 0.24.1 |
+| this | cloudposse/label/null | 0.24.1 |
+
+## Resources
+
+| Name |
+|------|
+| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) |
+| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) |
+| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) |
+| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) |
+| [datadog_integration_aws](https://registry.terraform.io/providers/datadog/datadog/latest/docs/resources/integration_aws) |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -28,7 +47,7 @@
 | enabled | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
 | environment | Environment, e.g. 'uw2', 'us-west-2', OR 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
 | excluded\_regions | An array of AWS regions to exclude from metrics collection | `list(string)` | `null` | no |
-| filter\_tags | An array of EC2 tags (in the form `key:value`) that defines a filter that Datadog use when collecting metrics from EC2. Wildcards, such as ? (for single characters) and \* (for multiple characters) can also be used | `list(string)` | `null` | no |
+| filter\_tags | An array of EC2 tags (in the form `key:value`) that defines a filter that Datadog use when collecting metrics from EC2. Wildcards, such as ? (for single characters) and * (for multiple characters) can also be used | `list(string)` | `null` | no |
 | host\_tags | An array of tags (in the form `key:value`) to add to all hosts and metrics reporting through this integration | `list(string)` | `null` | no |
 | id\_length\_limit | Limit `id` to this many characters (minimum 6).<br>Set to `0` for unlimited length.<br>Set to `null` for default, which is `0`.<br>Does not affect `id_full`. | `number` | `null` | no |
 | integrations | List of AWS permission names to apply for different integrations (e.g. 'all', 'core') | `list(string)` | n/a | yes |
@@ -48,5 +67,4 @@
 | aws\_account\_id | AWS Account ID of the IAM Role for Datadog to use for this integration |
 | aws\_role\_name | Name of the AWS IAM Role for Datadog to use for this integration |
 | datadog\_external\_id | Datadog integration external ID |
-
 <!-- markdownlint-restore -->
