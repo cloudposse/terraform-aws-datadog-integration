@@ -1,18 +1,26 @@
 variable "artifact_url" {
-  type        = string
-  description = "URL template for the remote artifact"
-  #default     = "https://artifacts.cloudposse.com/$$${module_name}/$$${git_ref}/$$${filename}"
-  default     = "https://github.com/DataDog/$$${module_name}/releases/download/$$${filename}-$$${git_ref}/$$${filename}-$$${git_ref}.zip"
+    # I don't like mixing format with template, I also don't want to create too much nesting in template string which might cause some to miss it if the modify it
+    default = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
 }
 
 variable "artifact_filename" {
   default = "aws-dd-forwarder"
 }
 
+variable "artifact_module" {
+  default = "datadog-serverless-functions"
+}
+
+variable "git_ref" {
+    default = "3.31.0"
+}
+
 locals {
-  api_key_actions   = ["kms:Decrypt", "secretsmanager:GetSecretValue", "ssm:GetParameter"]
-  api_key_resources = ["<KMS ARN>"]
-  api_key_env_var   = {}
+  url      = format(var.artifact_url, var.artifact_filename)
+  filename = format("%v-%v.zip", var.artifact_filename, var.git_ref)
+  # api_key_actions   = ["kms:Decrypt", "secretsmanager:GetSecretValue", "ssm:GetParameter"]
+  # api_key_resources = ["<KMS ARN>"]
+  # api_key_env_var   = {}
 }
 
 # # Recommended: AWS KMS
@@ -97,10 +105,11 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 module "artifact" {
   source      = "cloudposse/module-artifact/external"
   version     = "0.7.0"
-  filename    = var.artifact_filename
+  filename    = local.filename
   module_name = "datadog-serverless-functions"
   module_path = path.module
-  url         = var.artifact_url
+  git_ref     = var.git_ref
+  url         = local.url
 }
 
 resource "aws_lambda_function" "default" {
