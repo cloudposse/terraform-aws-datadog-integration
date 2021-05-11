@@ -33,7 +33,7 @@ variable "dd_api_key_source" {
   })
 
   default = {
-    kms = "arn:aws-cn:kms:us-west-2:123456789012:key/mykey"
+    kms = ""
     asm = ""
     ssm = ""
   }
