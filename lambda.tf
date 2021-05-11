@@ -3,28 +3,65 @@
 ##
 ## TODO 
 #   - Add some type of enabling feature flag for rds enahnced metrics
-#   - Find explicit way to check for presence of multiple conflicting api kiey secret options (there should only be one of kms, asm, ssm)
 #   - Move variables to variables.tf
+#   - Watch https://github.com/hashicorp/terraform/issues/15469 for future validation/error checking (variable validation can currently only reference itself)
 
-variable "api_key_kms_arn" {
-    default = "arn:aws-cn:kms:us-west-2:123456789012:key/mykey"
+variable "subnet_ids" {
+  description = "List of subnets to use when running in specific VPC"
+  type        = list(string)
+  default     = null
 }
 
-variable "api_key_kms_ciphertext_blob" {
-    default = "1234"
+variable "security_group_ids" {
+  description = "List of security group ids when Lambda Function should run in the VPC."
+  type        = list(string)
+  default     = null
 }
 
-variable "api_key_asm_arn" {
-    default = ""
+variable "tracing_config_mode" {
+  type        = string
+  description = "Can be either PassThrough or Active. If PassThrough, Lambda will only trace the request from an upstream service if it contains a tracing header with 'sampled=1'. If Active, Lambda will respect any tracing header it receives from an upstream service."
+  default     = "PassThrough"
 }
 
-variable "api_key_ssm_parameter_name" {
-    default = ""
+variable "dd_api_key_source" {
+  description = "ARN (kms or asm) or parameter name (for ssm) to retrieve Datadog api key."
+  type = object({
+    kms = string # kms key arn
+    asm = string # asm secret arn
+    ssm = string # paramater name
+  })
+
+  default = {
+    kms = "arn:aws-cn:kms:us-west-2:123456789012:key/mykey"
+    asm = ""
+    ssm = ""
+  }
+
+  validation {
+    condition     = length(compact(values(var.dd_api_key_source))) == 1
+    error_message = "Provide only one ARN (kms or asm) or parameter name (for ssm) to retrieve Datadog api key."
+  }
 }
 
 data "aws_ssm_parameter" "api_key" {
-    count = var.api_key_ssm_parameter_name != "" ? 1 : 0
-    name  = var.api_key_ssm_parameter_name
+  count = local.dd_api_key_resource == "ssm" ? 1 : 0
+  name  = local.dd_api_key_identifier
+}
+
+locals {
+  dd_api_key_source = {
+    for r, a in var.dd_api_key_source :
+    r => a if a != ""
+  }
+  dd_api_key_resource    = keys(local.dd_api_key_source)[0]
+  dd_api_key_identifier  = values(local.dd_api_key_source)[0]
+  dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? data.aws_ssm_parameter.api_key[0].arn : local.dd_api_key_identifier
+  dd_api_key_iam_actions = [lookup({ kms = "kms:Decrypt", asm = "secretsmanager:GetSecretValue", ssm = "ssm:GetParameters" }, local.dd_api_key_resource, "")]
+}
+
+variable "dd_api_key_kms_ciphertext_blob" {
+  default = "1234"
 }
 
 ######################################################################
@@ -54,49 +91,39 @@ resource "aws_iam_role" "lambda" {
 ######################################################################
 ## Create lambda logging and secret policy then attach to base lambda role
 
-# IAM policy locals
-locals {
-    api_key_kms_actions = var.api_key_kms_ciphertext_blob != "" ? ["kms:Decrypt"] : []
-    api_key_asm_actions = var.api_key_asm_arn != "" ? ["secretsmanager:GetSecretValue"] : []
-    api_key_ssm_actions = var.api_key_ssm_parameter_name != "" ? ["ssm:GetParameters"] : []
-    api_key_ssm_arn     = var.api_key_ssm_parameter_name != "" ? data.aws_ssm_parameter.api_key[0].arn : ""
-    api_iam_actions     = coalesce(local.api_key_kms_actions, local.api_key_asm_actions, local.api_key_ssm_actions)
-    api_iam_resource    = coalesce(var.api_key_kms_arn, var.api_key_asm_arn, local.api_key_ssm_arn)
-}
-
 # TODO review DD specific reqs 
 # https://github.com/DataDog/datadog-serverless-functions/blob/cb0e7965636a3ea613325d2d4624926600a436c0/aws/logs_monitoring/template.yaml
 data "aws_iam_policy_document" "lambda" {
 
-    statement {
-        sid = "WriteLogs"
+  statement {
+    sid = "WriteLogs"
 
-        effect = "Allow"
-        
-        actions = [
-            "logs:CreateLogGroup",
-            "logs:CreateLogStream",
-            "logs:PutLogEvents",
-            # I think these are only needed for other DD lambda forwarder types 
-            # https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html#vpc-permissions
-            # https://github.com/DataDog/datadog-serverless-functions/blob/cb0e7965636a3ea613325d2d4624926600a436c0/aws/logs_monitoring/template.yaml#L553-L560
-            # "ec2:CreateNetworkInterface",
-            # "ec2:DescribeNetworkInterfaces",
-            # "ec2:DeleteNetworkInterface"
-        ]
+    effect = "Allow"
 
-        resources = ["*"]
-    }
-    
-    statement {
-        sid = "GetApiKey"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      # I think these are only needed for other DD lambda forwarder types 
+      # https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html#vpc-permissions
+      # https://github.com/DataDog/datadog-serverless-functions/blob/cb0e7965636a3ea613325d2d4624926600a436c0/aws/logs_monitoring/template.yaml#L553-L560
+      # "ec2:CreateNetworkInterface",
+      # "ec2:DescribeNetworkInterfaces",
+      # "ec2:DeleteNetworkInterface"
+    ]
 
-        effect = "Allow"
-        
-        actions = local.api_iam_actions
+    resources = ["*"]
+  }
 
-        resources = [local.api_iam_resource]
-    }
+  statement {
+    sid = "GetApiKey"
+
+    effect = "Allow"
+
+    actions = local.dd_api_key_iam_actions
+
+    resources = [local.dd_api_key_arn]
+  }
 
 }
 
@@ -121,20 +148,20 @@ variable "dd_artifact_filename" {
 }
 
 variable "dd_module_name" {
-    default = "datadog-serverless-functions"
+  default = "datadog-serverless-functions"
 }
 variable "dd_git_ref" {
-    default = "3.31.0"
+  default = "3.31.0"
 }
 
 variable "dd_artifact_url" {
-    # I don't like mixing format with template, I also don't want to create too much nesting in template string which might cause some to miss it if the modify it
-    default = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
+  # I don't like mixing format with template, I also don't want to create too much nesting in template string which might cause some to miss it if the modify it
+  default = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
 }
 
 locals {
-    url      = format(var.dd_artifact_url, var.dd_artifact_filename)
-    filename = format("%v-%v.zip", var.dd_artifact_filename, var.dd_git_ref)
+  url      = format(var.dd_artifact_url, var.dd_artifact_filename)
+  filename = format("%v-%v.zip", var.dd_artifact_filename, var.dd_git_ref)
 }
 
 module "artifact" {
@@ -152,38 +179,43 @@ module "artifact" {
 
 # Lambda env vars locals 
 locals {
-    dd_api_key_kms = var.api_key_kms_ciphertext_blob != "" ? { DD_KMS_API_KEY = var.api_key_kms_ciphertext_blob } : {}
-    dd_api_key_asm = var.api_key_asm_arn != "" ? { DD_API_KEY_SECRET_ARN = var.api_key_asm_arn } : {}
-    dd_api_key_ssm = var.api_key_ssm_parameter_name != "" ? { DD_API_KEY_SSM_NAME = var.api_key_ssm_parameter_name } : {}
-    lambda_env     = coalesce(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
+  dd_api_key_kms = local.dd_api_key_resource == "kms" ? { DD_KMS_API_KEY = var.dd_api_key_kms_ciphertext_blob } : {}
+  dd_api_key_asm = local.dd_api_key_resource == "asm" ? { DD_API_KEY_SECRET_ARN = local.dd_api_key_identifier } : {}
+  dd_api_key_ssm = local.dd_api_key_resource == "ssm" ? { DD_API_KEY_SSM_NAME = local.dd_api_key_identifier } : {}
+  lambda_env     = coalesce(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
 }
 
 resource "aws_lambda_function" "default" {
-    description      = "Datadog forwarder for RDS enhanced monitoring"
-    filename         = module.artifact.file
-    function_name    = "datadog" # module.this.id
-    role             = aws_iam_role.lambda.arn
-    handler          = "lambda_function.lambda_handler"
-    source_code_hash = module.artifact.base64sha256
-    runtime          = "python3.7" # var.lambda_runtime
-    # tags             = module.this.tags
+  description      = "Datadog forwarder for RDS enhanced monitoring"
+  filename         = module.artifact.file
+  function_name    = "datadog" # module.this.id
+  role             = aws_iam_role.lambda.arn
+  handler          = "lambda_function.lambda_handler"
+  source_code_hash = module.artifact.base64sha256
+  runtime          = "python3.7" # var.lambda_runtime
+  # tags             = module.this.tags
 
-    # vpc_config # do we need this based of implementation?
-
-    environment {
-        variables = local.lambda_env
+  dynamic "vpc_config" {
+    for_each = var.subnet_ids != null && var.security_group_ids != null ? [true] : []
+    content {
+      security_group_ids = var.security_group_ids
+      subnet_ids         = var.subnet_ids
     }
+  }
 
-# Do we use this as a standard
-#   tracing_config {
-#     mode = var.tracing_config_mode
-#   }
+  environment {
+    variables = local.lambda_env
+  }
+
+  tracing_config {
+    mode = var.tracing_config_mode
+  }
 }
 
 output "lambda_env" {
-    value = local.lambda_env
+  value = local.lambda_env
 }
 
 output "aws_iam_policy_document" {
-    value = data.aws_iam_policy_document.lambda.json
+  value = data.aws_iam_policy_document.lambda.json
 }
