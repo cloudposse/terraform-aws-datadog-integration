@@ -44,6 +44,10 @@ variable "dd_api_key_source" {
   }
 }
 
+variable "dd_api_key_kms_ciphertext_blob" {
+  default = ""
+}
+
 data "aws_ssm_parameter" "api_key" {
   count = local.dd_api_key_resource == "ssm" ? 1 : 0
   name  = local.dd_api_key_identifier
@@ -51,17 +55,13 @@ data "aws_ssm_parameter" "api_key" {
 
 locals {
   dd_api_key_source = {
-    for r, a in var.dd_api_key_source :
-    r => a if a != ""
+    for k, v in var.dd_api_key_source :
+    k => v if v != ""
   }
   dd_api_key_resource    = keys(local.dd_api_key_source)[0]
   dd_api_key_identifier  = values(local.dd_api_key_source)[0]
   dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? data.aws_ssm_parameter.api_key[0].arn : local.dd_api_key_identifier
   dd_api_key_iam_actions = [lookup({ kms = "kms:Decrypt", asm = "secretsmanager:GetSecretValue", ssm = "ssm:GetParameters" }, local.dd_api_key_resource, "")]
-}
-
-variable "dd_api_key_kms_ciphertext_blob" {
-  default = "1234"
 }
 
 ######################################################################
