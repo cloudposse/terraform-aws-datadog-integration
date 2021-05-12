@@ -182,7 +182,7 @@ locals {
   dd_api_key_kms = local.dd_api_key_resource == "kms" ? { DD_KMS_API_KEY = var.dd_api_key_kms_ciphertext_blob } : {}
   dd_api_key_asm = local.dd_api_key_resource == "asm" ? { DD_API_KEY_SECRET_ARN = local.dd_api_key_identifier } : {}
   dd_api_key_ssm = local.dd_api_key_resource == "ssm" ? { DD_API_KEY_SSM_NAME = local.dd_api_key_identifier } : {}
-  lambda_env     = coalesce(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
+  lambda_env     = merge(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
 }
 
 resource "aws_lambda_function" "default" {
