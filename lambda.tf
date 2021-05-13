@@ -1,9 +1,5 @@
 ######################################################################
 ## https://docs.datadoghq.com/integrations/amazon_rds/?tab=enhanced
-##
-## TODO 
-#   - Move variables to variables.tf???
-#   - Watch https://github.com/hashicorp/terraform/issues/15469 for future validation/error checking (variable validation can currently only reference itself)
 
 locals {
   lambda_enabled         = var.dd_api_key_source.resource != "" ? true : false
@@ -102,7 +98,7 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 ######################################################################
 ## Get DD lambda zip artifact
 ## https://github.com/DataDog/datadog-serverless-functions/releases
-## TODO move variables to variables.tf???
+
 
 module "artifact" {
   count = local.lambda_enabled ? 1 : 0
