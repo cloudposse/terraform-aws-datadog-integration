@@ -2,7 +2,7 @@
 ## https://docs.datadoghq.com/integrations/amazon_rds/?tab=enhanced
 
 locals {
-  lambda_enabled         = var.dd_api_key_source.resource != "" ? true : false
+  lambda_enabled         = module.this.enabled && var.dd_api_key_source.resource != "" ? true : false
   dd_api_key_resource    = var.dd_api_key_source.resource
   dd_api_key_identifier  = var.dd_api_key_source.identifier
   dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? data.aws_ssm_parameter.api_key[0].arn : local.dd_api_key_identifier
@@ -84,7 +84,7 @@ resource "aws_iam_policy" "lambda" {
   count = local.lambda_enabled ? 1 : 0
 
   name        = module.this.id
-  description = "Allow put logs and access to DD api key"
+  description = "Allow put logs and access to DD api key."
   policy      = data.aws_iam_policy_document.lambda[0].json
 }
 
@@ -118,7 +118,7 @@ module "artifact" {
 resource "aws_lambda_function" "default" {
   count = local.lambda_enabled ? 1 : 0
 
-  description      = "Datadog forwarder for RDS enhanced monitoring"
+  description      = "Datadog forwarder for RDS enhanced monitoring."
   filename         = module.artifact[0].file
   function_name    = module.this.id
   role             = aws_iam_role.lambda[0].arn

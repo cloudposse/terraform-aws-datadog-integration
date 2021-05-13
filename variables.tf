@@ -47,7 +47,7 @@ variable "security_group_ids" {
 
 variable "lambda_runtime" {
   type        = string
-  description = "Runtime environment for Datadog lambda"
+  description = "Runtime environment for Datadog lambda."
   default     = "python3.7"
 }
 
