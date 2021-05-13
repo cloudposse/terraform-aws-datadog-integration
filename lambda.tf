@@ -30,7 +30,7 @@ variable "tracing_config_mode" {
 }
 
 variable "dd_api_key_source" {
-  description = "ARN for retrieving api key. Datadog lambda allows for only one of (kms, asm, ssm) secrets management."
+  description = "One of: ARN for AWS Secrets Manager (asm) to retrieve the Datadog (DD) api key, ARN for the KMS (kms) key used to decrypt the ciphertext_blob of the api key, or the name of the SSM (ssm) parameter used to retrieve the DD api key."
   type = object({
     resource   = string
     identifier = string
@@ -73,7 +73,7 @@ variable "dd_api_key_kms_ciphertext_blob" {
 }
 
 locals {
-  lambda_enable          = var.dd_api_key_source.resource != "" ? true : false
+  lambda_enabled         = var.dd_api_key_source.resource != "" ? true : false
   dd_api_key_resource    = var.dd_api_key_source.resource
   dd_api_key_identifier  = var.dd_api_key_source.identifier
   dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? data.aws_ssm_parameter.api_key[0].arn : local.dd_api_key_identifier
@@ -89,7 +89,7 @@ data "aws_ssm_parameter" "api_key" {
 ## Create base assume policy and lambda role
 
 data "aws_iam_policy_document" "assume" {
-  count = local.lambda_enable == true ? 1 : 0
+  count = local.lambda_enabled ? 1 : 0
 
   statement {
     effect = "Allow"
@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "assume" {
 }
 
 resource "aws_iam_role" "lambda" {
-  count = local.lambda_enable == true ? 1 : 0
+  count = local.lambda_enabled ? 1 : 0
 
   name               = module.this.id
   assume_role_policy = data.aws_iam_policy_document.assume[0].json
@@ -117,7 +117,7 @@ resource "aws_iam_role" "lambda" {
 ## Create lambda logging and secret policy then attach to base lambda role
 
 data "aws_iam_policy_document" "lambda" {
-  count = local.lambda_enable == true ? 1 : 0
+  count = local.lambda_enabled ? 1 : 0
 
   statement {
     sid = "WriteLogs"
@@ -146,7 +146,7 @@ data "aws_iam_policy_document" "lambda" {
 }
 
 resource "aws_iam_policy" "lambda" {
-  count = local.lambda_enable == true ? 1 : 0
+  count = local.lambda_enabled ? 1 : 0
 
   name        = module.this.id
   description = "Allow put logs and access to DD api key"
@@ -154,7 +154,7 @@ resource "aws_iam_policy" "lambda" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda" {
-  count = local.lambda_enable == true ? 1 : 0
+  count = local.lambda_enabled ? 1 : 0
 
   role       = aws_iam_role.lambda[0].name
   policy_arn = aws_iam_policy.lambda[0].arn
@@ -195,7 +195,7 @@ locals {
 }
 
 module "artifact" {
-  count = local.lambda_enable == true ? 1 : 0
+  count = local.lambda_enabled ? 1 : 0
 
   source      = "cloudposse/module-artifact/external"
   version     = "0.7.0"
@@ -218,7 +218,7 @@ locals {
 }
 
 resource "aws_lambda_function" "default" {
-  count = local.lambda_enable == true ? 1 : 0
+  count = local.lambda_enabled ? 1 : 0
 
   description      = "Datadog forwarder for RDS enhanced monitoring"
   filename         = module.artifact[0].file
