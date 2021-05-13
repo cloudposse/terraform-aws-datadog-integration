@@ -78,6 +78,12 @@ locals {
   dd_api_key_identifier  = var.dd_api_key_source.identifier
   dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? data.aws_ssm_parameter.api_key[0].arn : local.dd_api_key_identifier
   dd_api_key_iam_actions = [lookup({ kms = "kms:Decrypt", asm = "secretsmanager:GetSecretValue", ssm = "ssm:GetParameters" }, local.dd_api_key_resource, "")]
+  url                    = format(var.dd_artifact_url, var.dd_artifact_filename)
+  filename               = format("%v-%v.zip", var.dd_artifact_filename, var.dd_git_ref)
+  dd_api_key_kms         = local.dd_api_key_resource == "kms" ? { DD_KMS_API_KEY = var.dd_api_key_kms_ciphertext_blob } : {}
+  dd_api_key_asm         = local.dd_api_key_resource == "asm" ? { DD_API_KEY_SECRET_ARN = local.dd_api_key_identifier } : {}
+  dd_api_key_ssm         = local.dd_api_key_resource == "ssm" ? { DD_API_KEY_SSM_NAME = local.dd_api_key_identifier } : {}
+  lambda_env             = merge(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
 }
 
 data "aws_ssm_parameter" "api_key" {
@@ -189,11 +195,6 @@ variable "dd_artifact_url" {
   default = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
 }
 
-locals {
-  url      = format(var.dd_artifact_url, var.dd_artifact_filename)
-  filename = format("%v-%v.zip", var.dd_artifact_filename, var.dd_git_ref)
-}
-
 module "artifact" {
   count = local.lambda_enabled ? 1 : 0
 
@@ -208,14 +209,6 @@ module "artifact" {
 
 ######################################################################
 ## Create lambda function
-
-# Lambda env vars locals 
-locals {
-  dd_api_key_kms = local.dd_api_key_resource == "kms" ? { DD_KMS_API_KEY = var.dd_api_key_kms_ciphertext_blob } : {}
-  dd_api_key_asm = local.dd_api_key_resource == "asm" ? { DD_API_KEY_SECRET_ARN = local.dd_api_key_identifier } : {}
-  dd_api_key_ssm = local.dd_api_key_resource == "ssm" ? { DD_API_KEY_SSM_NAME = local.dd_api_key_identifier } : {}
-  lambda_env     = merge(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
-}
 
 resource "aws_lambda_function" "default" {
   count = local.lambda_enabled ? 1 : 0
