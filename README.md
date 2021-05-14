@@ -256,14 +256,13 @@ Like this project? Please give it a ★ on [our GitHub](https://github.com/cloud
 Are you using this project or any of our other projects? Consider [leaving a testimonial][testimonial]. =)
 
 
+
 ## Related Projects
 
 Check out these related projects.
 
 - [fluentd-datadog-logs](https://github.com/cloudposse/fluentd-datadog-logs) - Dockerfile that implements fluentd log forwarding to datadog's new log service
 - [terraform-datadog-monitor](https://github.com/cloudposse/terraform-datadog-monitor) - Terraform module to provision Standard System Monitors (cpu, memory, swap, io, etc) in Datadog
-
-
 
 ## Help
 
