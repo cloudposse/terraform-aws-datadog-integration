@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "assume" {
 resource "aws_iam_role" "lambda" {
   count = local.lambda_enabled ? 1 : 0
 
-  name               = module.this.id
+  name               = "lambda-${module.this.id}"
   assume_role_policy = data.aws_iam_policy_document.assume[0].json
   tags               = module.this.tags
 }
@@ -85,7 +85,7 @@ data "aws_iam_policy_document" "lambda" {
 resource "aws_iam_policy" "lambda" {
   count = local.lambda_enabled ? 1 : 0
 
-  name        = module.this.id
+  name        = "lambda-${module.this.id}"
   description = "Allow put logs and access to DD api key."
   policy      = data.aws_iam_policy_document.lambda[0].json
 }
