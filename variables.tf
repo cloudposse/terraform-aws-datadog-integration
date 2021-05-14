@@ -45,6 +45,13 @@ variable "security_group_ids" {
   default     = null
 }
 
+#https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
+variable "lambda_reserved_concurrent_executions" {
+  type        = number
+  description = "Amount of reserved concurrent executions for this lambda function. A value of 0 disables lambda from being triggered and -1 removes any concurrency limitations. Defaults to Unreserved Concurrency Limits -1."
+  default     = -1
+}
+
 variable "lambda_runtime" {
   type        = string
   description = "Runtime environment for Datadog lambda."

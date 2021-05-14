@@ -118,14 +118,15 @@ module "artifact" {
 resource "aws_lambda_function" "default" {
   count = local.lambda_enabled ? 1 : 0
 
-  description      = "Datadog forwarder for RDS enhanced monitoring."
-  filename         = module.artifact[0].file
-  function_name    = module.this.id
-  role             = aws_iam_role.lambda[0].arn
-  handler          = "lambda_function.lambda_handler"
-  source_code_hash = module.artifact[0].base64sha256
-  runtime          = var.lambda_runtime
-  tags             = module.this.tags
+  description                    = "Datadog forwarder for RDS enhanced monitoring."
+  filename                       = module.artifact[0].file
+  function_name                  = module.this.id
+  role                           = aws_iam_role.lambda[0].arn
+  handler                        = "lambda_function.lambda_handler"
+  source_code_hash               = module.artifact[0].base64sha256
+  runtime                        = var.lambda_runtime
+  reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
+  tags                           = module.this.tags
 
   dynamic "vpc_config" {
     for_each = var.subnet_ids != null && var.security_group_ids != null ? [true] : []
