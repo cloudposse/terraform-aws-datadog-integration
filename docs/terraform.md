@@ -90,6 +90,6 @@
 | <a name="output_aws_account_id"></a> [aws\_account\_id](#output\_aws\_account\_id) | AWS Account ID of the IAM Role for Datadog to use for this integration |
 | <a name="output_aws_role_name"></a> [aws\_role\_name](#output\_aws\_role\_name) | Name of the AWS IAM Role for Datadog to use for this integration |
 | <a name="output_datadog_external_id"></a> [datadog\_external\_id](#output\_datadog\_external\_id) | Datadog integration external ID |
-| <a name="output_lambda_function_id"></a> [lambda\_function\_id](#output\_lambda\_function\_id) | n/a |
-| <a name="output_lambda_iam_role_id"></a> [lambda\_iam\_role\_id](#output\_lambda\_iam\_role\_id) | n/a |
+| <a name="output_lambda_function_id"></a> [lambda\_function\_id](#output\_lambda\_function\_id) | Lambda resource ID |
+| <a name="output_lambda_iam_role_id"></a> [lambda\_iam\_role\_id](#output\_lambda\_iam\_role\_id) | Lambda iam role ID |
 <!-- markdownlint-restore -->
