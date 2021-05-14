@@ -10,4 +10,8 @@ module "datadog_integration" {
   dd_api_key_source                = var.dd_api_key_source
 
   context = module.this.context
+
+  depends_on = [
+    aws_ssm_parameter.example_api_key,
+  ]
 }
