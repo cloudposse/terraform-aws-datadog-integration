@@ -54,6 +54,8 @@ resource "aws_iam_role" "lambda" {
 data "aws_iam_policy_document" "lambda" {
   count = local.lambda_enabled ? 1 : 0
 
+  # #checkov:skip=BC_AWS_IAM_57: (Pertaining to contstraining IAM write access) This policy has not write access and is restricted to one specific ARN.
+
   statement {
     sid = "WriteLogs"
 
@@ -117,6 +119,8 @@ module "artifact" {
 
 resource "aws_lambda_function" "default" {
   count = local.lambda_enabled ? 1 : 0
+
+  #checkov:skip=BC_AWS_GENERAL_64: (Pertaining to Lambda DLQ) Vendor lambda does not have a means to reprocess failed events.
 
   description                    = "Datadog forwarder for RDS enhanced monitoring."
   filename                       = module.artifact[0].file
