@@ -47,7 +47,7 @@ variable "dd_api_key_source" {
 
   default = {
     resource   = "ssm"
-    identifier = "foo/bar"
+    identifier = "/foo/bar"
   }
 
   # Resource can be one of kms, asm, ssm ("" to disable all lambda resources)
