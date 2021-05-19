@@ -175,6 +175,7 @@ Available targets:
 | <a name="module_all_label"></a> [all\_label](#module\_all\_label) | cloudposse/label/null | 0.24.1 |
 | <a name="module_artifact"></a> [artifact](#module\_artifact) | cloudposse/module-artifact/external | 0.7.0 |
 | <a name="module_core_label"></a> [core\_label](#module\_core\_label) | cloudposse/label/null | 0.24.1 |
+| <a name="module_lambda_label"></a> [lambda\_label](#module\_lambda\_label) | cloudposse/label/null | 0.24.1 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.24.1 |
 
 ## Resources
