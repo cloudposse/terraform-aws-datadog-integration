@@ -61,7 +61,7 @@
 | <a name="input_dd_artifact_filename"></a> [dd\_artifact\_filename](#input\_dd\_artifact\_filename) | The datadog artifact filename minus extension. | `string` | `"aws-dd-forwarder"` | no |
 | <a name="input_dd_artifact_url"></a> [dd\_artifact\_url](#input\_dd\_artifact\_url) | The URL template to format the full URL to the Datadog zip artifact | `string` | `"https://github.com/DataDog/$${module_name}/releases/download/%v-$${git_ref}/$${filename}"` | no |
 | <a name="input_dd_git_ref"></a> [dd\_git\_ref](#input\_dd\_git\_ref) | The version of the Datadog artifact zip file | `string` | `"3.31.0"` | no |
-| <a name="input_dd_module_name"></a> [dd\_module\_name](#input\_dd\_module\_name) | The Datadog github repository name. | `string` | `"datadog-serverless-functions"` | no |
+| <a name="input_dd_module_name"></a> [dd\_module\_name](#input\_dd\_module\_name) | The Datadog GitHub repository name | `string` | `"datadog-serverless-functions"` | no |
 | <a name="input_delimiter"></a> [delimiter](#input\_delimiter) | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes`.<br>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment, e.g. 'uw2', 'us-west-2', OR 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
