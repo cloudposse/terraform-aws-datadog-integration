@@ -34,7 +34,7 @@ variable "account_specific_namespace_rules" {
 }
 
 variable "subnet_ids" {
-  description = "List of subnets to use when running in specific VPC."
+  description = "List of subnet IDs to use when running in a specific VPC."
   type        = list(string)
   default     = null
 }
