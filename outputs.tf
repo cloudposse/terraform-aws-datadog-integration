@@ -20,5 +20,5 @@ output "lambda_function_id" {
 
 output "lambda_iam_role_id" {
   value       = length(aws_iam_role.lambda) > 0 ? aws_iam_role.lambda[0].id : null
-  description = "Lambda iam role ID"
+  description = "Lambda IAM role ID"
 }
