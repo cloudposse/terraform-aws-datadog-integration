@@ -40,7 +40,7 @@ variable "subnet_ids" {
 }
 
 variable "security_group_ids" {
-  description = "List of security group ids when Lambda Function should run in the VPC."
+  description = "List of security group IDs used when Lambda Function should run in the VPC"
   type        = list(string)
   default     = null
 }
