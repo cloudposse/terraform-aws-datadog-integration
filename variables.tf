@@ -120,7 +120,7 @@ variable "dd_module_name" {
 }
 variable "dd_git_ref" {
   type        = string
-  description = "The version of the Datadog artifact zip file."
+  description = "The version of the Datadog artifact zip file"
   default     = "3.31.0"
 }
 
