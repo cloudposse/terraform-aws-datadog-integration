@@ -109,7 +109,7 @@ variable "dd_api_key_kms_ciphertext_blob" {
 
 variable "dd_artifact_filename" {
   type        = string
-  description = "The datadog artifact filename minus extension."
+  description = "The Datadog artifact filename minus extension"
   default     = "aws-dd-forwarder"
 }
 
