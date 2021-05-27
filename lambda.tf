@@ -5,7 +5,7 @@ locals {
   lambda_enabled         = module.this.enabled && var.dd_api_key_source.resource != "" ? true : false
   dd_api_key_resource    = var.dd_api_key_source.resource
   dd_api_key_identifier  = var.dd_api_key_source.identifier
-  dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? data.aws_ssm_parameter.api_key[0].arn : local.dd_api_key_identifier
+  dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? join("", data.aws_ssm_parameter.api_key.*.arn : local.dd_api_key_identifier
   dd_api_key_iam_actions = [lookup({ kms = "kms:Decrypt", asm = "secretsmanager:GetSecretValue", ssm = "ssm:GetParameters" }, local.dd_api_key_resource, "")]
   url                    = format(var.dd_artifact_url, var.dd_artifact_filename)
   filename               = format("%v-%v.zip", var.dd_artifact_filename, var.dd_git_ref)
