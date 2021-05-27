@@ -127,6 +127,5 @@ variable "dd_git_ref" {
 variable "dd_artifact_url" {
   type        = string
   description = "The URL template to format the full URL to the Datadog zip artifact"
-  # I don't like mixing format with template, I also don't want to create too much nesting in template string which might cause some to miss it if the modify it
   default = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
 }
