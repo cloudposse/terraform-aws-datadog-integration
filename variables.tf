@@ -103,7 +103,7 @@ variable "dd_api_key_source" {
 
 variable "dd_api_key_kms_ciphertext_blob" {
   type        = string
-  description = "CiphertextBlob stored in enironment variable DD_KMS_API_KEY used by the lambda function, along with the kms key, to decrypt Datadog API key."
+  description = "CiphertextBlob stored in environment variable DD_KMS_API_KEY used by the lambda function, along with the KMS key, to decrypt Datadog API key"
   default     = ""
 }
 
