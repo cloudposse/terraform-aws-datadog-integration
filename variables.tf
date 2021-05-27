@@ -127,5 +127,5 @@ variable "dd_git_ref" {
 variable "dd_artifact_url" {
   type        = string
   description = "The URL template to format the full URL to the Datadog zip artifact"
-  default = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
+  default     = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
 }
