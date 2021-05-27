@@ -115,7 +115,7 @@ variable "dd_artifact_filename" {
 
 variable "dd_module_name" {
   type        = string
-  description = "The Datadog github repository name."
+  description = "The Datadog GitHub repository name"
   default     = "datadog-serverless-functions"
 }
 variable "dd_git_ref" {
