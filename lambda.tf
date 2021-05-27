@@ -16,7 +16,7 @@ locals {
 }
 
 data "aws_ssm_parameter" "api_key" {
-  count = local.dd_api_key_resource == "ssm" ? 1 : 0
+  count = local. lambda_enabled  && local.dd_api_key_resource == "ssm" ? 1 : 0
   name  = local.dd_api_key_identifier
 }
 
