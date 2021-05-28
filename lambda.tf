@@ -26,7 +26,6 @@ module "lambda_label" {
   attributes = ["lambda"]
 
   context    = module.this.context
-  attributes = ["lambda"]
 }
 
 ######################################################################
