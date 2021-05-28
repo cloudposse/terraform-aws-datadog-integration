@@ -16,7 +16,7 @@ locals {
 }
 
 data "aws_ssm_parameter" "api_key" {
-  count = local. lambda_enabled  && local.dd_api_key_resource == "ssm" ? 1 : 0
+  count = local.lambda_enabled && local.dd_api_key_resource == "ssm" ? 1 : 0
   name  = local.dd_api_key_identifier
 }
 
@@ -25,7 +25,7 @@ module "lambda_label" {
   version    = "0.24.1" # requires Terraform >= 0.13.0
   attributes = ["lambda"]
 
-  context    = module.this.context
+  context = module.this.context
 }
 
 ######################################################################
