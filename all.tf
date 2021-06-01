@@ -59,7 +59,6 @@ data "aws_iam_policy_document" "all" {
       "s3:ListAllMyBuckets",
       "s3:PutBucketNotification",
       "s3:ListBucket",
-      "s3:GetBucketLocation",
       "s3:GetObject",
       "ses:Get*",
       "sns:List*",
