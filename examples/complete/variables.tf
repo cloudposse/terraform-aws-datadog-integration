@@ -46,8 +46,8 @@ variable "dd_api_key_source" {
   })
 
   default = {
-    resource   = ""
-    identifier = ""
+    resource   = "ssm"
+    identifier = "/datadog/api-key"
   }
 
   # Resource can be one of kms, asm, ssm ("" to disable all lambda resources)

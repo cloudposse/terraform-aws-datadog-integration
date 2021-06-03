@@ -9,10 +9,11 @@ module "datadog_integration" {
   account_specific_namespace_rules = var.account_specific_namespace_rules
 
   # Enables RDS enhanced monitoring
-  dd_api_key_source = {
-    resource   = "ssm"
-    identifier = aws_ssm_parameter.test_fixture.name
-  }
+  dd_api_key_source = var.dd_api_key_source
+
+  depends_on = [
+    aws_ssm_parameter.test_fixture
+  ]
 
   context = module.this.context
 }
