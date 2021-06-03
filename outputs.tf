@@ -12,3 +12,13 @@ output "datadog_external_id" {
   value       = join("", datadog_integration_aws.integration.*.external_id)
   description = "Datadog integration external ID"
 }
+
+output "lambda_function_id" {
+  value       = length(aws_lambda_function.default) > 0 ? aws_lambda_function.default[0].id : null
+  description = "Lambda resource ID"
+}
+
+output "lambda_iam_role_id" {
+  value       = length(aws_iam_role.lambda) > 0 ? aws_iam_role.lambda[0].id : null
+  description = "Lambda IAM role ID"
+}
