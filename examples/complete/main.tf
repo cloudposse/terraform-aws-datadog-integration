@@ -7,7 +7,12 @@ module "datadog_integration" {
   host_tags                        = var.host_tags
   excluded_regions                 = var.excluded_regions
   account_specific_namespace_rules = var.account_specific_namespace_rules
-  dd_api_key_source                = var.dd_api_key_source
+
+  # Enables RDS enhanced monitoring
+  dd_api_key_source = {
+    resource   = "ssm"
+    identifier = aws_ssm_parameter.test_fixture.name
+  }
 
   context = module.this.context
 }
