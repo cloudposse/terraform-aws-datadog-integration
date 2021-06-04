@@ -40,6 +40,7 @@ data "aws_iam_policy_document" "all" {
       "kinesis:List*",
       "kinesis:Describe*",
       "kms:*",
+      "kms:Decrypt",
       "lambda:AddPermission",
       "lambda:GetPolicy",
       "lambda:List*",
