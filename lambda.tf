@@ -167,6 +167,13 @@ resource "aws_lambda_permission" "cloudwatch" {
   source_arn    = "arn:aws:logs:${local.aws_region}:${local.aws_account_id}:log-group:RDSOSMetrics:*"
 }
 
+resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filter" {
+  name            = "datadog_log_subscription_filter"
+  log_group_name  = "RDSOSMetrics"
+  destination_arn = aws_lambda_function.default[0].id
+  filter_pattern  = ""
+}
+
 resource "aws_cloudwatch_log_group" "this" {
   count = local.lambda_enabled ? 1 : 0
 
