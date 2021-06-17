@@ -6,7 +6,7 @@ locals {
   dd_api_key_resource    = var.dd_api_key_source.resource
   dd_api_key_identifier  = var.dd_api_key_source.identifier
   dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? join("", data.aws_ssm_parameter.api_key.*.arn) : local.dd_api_key_identifier
-  dd_api_key_iam_actions = [lookup({ kms = "kms:Decrypt", asm = "secretsmanager:GetSecretValue", ssm = "ssm:GetParameters" }, local.dd_api_key_resource, "")]
+  dd_api_key_iam_actions = [lookup({ kms = "kms:Decrypt", asm = "secretsmanager:GetSecretValue", ssm = "ssm:GetParameter" }, local.dd_api_key_resource, "")]
   url                    = format(var.dd_artifact_url, var.dd_artifact_filename)
   filename               = format("%v-%v.zip", var.dd_artifact_filename, var.dd_git_ref)
   dd_api_key_kms         = local.dd_api_key_resource == "kms" ? { DD_KMS_API_KEY = var.dd_api_key_kms_ciphertext_blob } : {}
