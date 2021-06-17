@@ -15,10 +15,6 @@ locals {
   lambda_env             = merge(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
 }
 
-data "aws_region" "current" {}
-
-data "aws_caller_identity" "current" {}
-
 data "aws_ssm_parameter" "api_key" {
   count = local.lambda_enabled && local.dd_api_key_resource == "ssm" ? 1 : 0
   name  = local.dd_api_key_identifier
@@ -168,7 +164,7 @@ resource "aws_lambda_permission" "cloudwatch" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.default[0].function_name
   principal     = "logs.amazonaws.com"
-  source_arn    = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:RDSOSMetrics:*"
+  source_arn    = "arn:aws:logs:${local.aws_region}:${local.aws_account_id}:log-group:RDSOSMetrics:*"
 }
 
 resource "aws_cloudwatch_log_group" "this" {
