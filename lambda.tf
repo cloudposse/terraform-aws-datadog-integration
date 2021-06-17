@@ -170,7 +170,7 @@ resource "aws_lambda_permission" "cloudwatch" {
 resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filter" {
   name            = "datadog_log_subscription_filter"
   log_group_name  = "RDSOSMetrics"
-  destination_arn = aws_lambda_function.default[0].id
+  destination_arn = aws_lambda_function.default[0].arn
   filter_pattern  = ""
 }
 
