@@ -122,6 +122,18 @@ module "artifact" {
   url         = local.url
 }
 
+data "external" "curl" {
+  # count      = module.this.enabled ? 1 : 0
+  program    = concat(["curl"], "-fsSL", ["--write-out", "{\"success\": \"true\", \"filename_effective\": \"lambda.py\"}", "-o", "lambda.py", "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py"])
+  # depends_on = [data.external.git]
+}
+
+data "archive_file" "init" {
+  type        = "zip"
+  source_file = "${path.module}/lambda.py"
+  output_path = "${path.module}/lambda.zip"
+}
+
 ######################################################################
 ## Create lambda function
 
@@ -131,7 +143,7 @@ resource "aws_lambda_function" "default" {
   #checkov:skip=BC_AWS_GENERAL_64: (Pertaining to Lambda DLQ) Vendor lambda does not have a means to reprocess failed events.
 
   description                    = "Datadog forwarder for RDS enhanced monitoring."
-  filename                       = module.artifact[0].file
+  filename                       = "${path.module}/lambda.zip" # module.artifact[0].file
   function_name                  = module.lambda_label.id
   role                           = aws_iam_role.lambda[0].arn
   handler                        = "lambda_function.lambda_handler"

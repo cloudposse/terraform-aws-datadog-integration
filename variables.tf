@@ -88,7 +88,7 @@ variable "dd_api_key_source" {
     error_message = "ARN for KMS key does not appear to be valid format (example: arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab)."
   }
 
-  # Check asm arn format 
+  # Check asm arn format
   validation {
     condition     = var.dd_api_key_source.resource == "asm" ? can(regex("arn:aws:secretsmanager:.*:secret:.*", var.dd_api_key_source.identifier)) : true
     error_message = "ARN for AWS Secrets Manager (asm) does not appear to be valid format (example: arn:aws:secretsmanager:us-west-2:111122223333:secret:aes128-1a2b3c)."
@@ -121,7 +121,7 @@ variable "dd_module_name" {
 variable "dd_git_ref" {
   type        = string
   description = "The version of the Datadog artifact zip file"
-  default     = "3.31.0"
+  default     = "3.34.0"
 }
 
 variable "dd_artifact_url" {
