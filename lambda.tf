@@ -147,7 +147,7 @@ resource "aws_lambda_function" "default" {
   function_name                  = module.lambda_label.id
   role                           = aws_iam_role.lambda[0].arn
   handler                        = "lambda_function.lambda_handler"
-  source_code_hash               = module.artifact[0].base64sha256
+  source_code_hash               = filebase64sha256("${path.module}/lambda.zip") #module.artifact[0].base64sha256
   runtime                        = var.lambda_runtime
   reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
   tags                           = module.lambda_label.tags
