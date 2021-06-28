@@ -124,13 +124,13 @@ module "artifact" {
 
 data "external" "curl" {
   # count      = module.this.enabled ? 1 : 0
-  program = concat(["curl"], ["-fsSL"], ["--write-out", "{\"success\": \"true\", \"filename_effective\": \"lambda.py\"}", "-o", "${path.module}/lambda.py", "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py"])
+  program = concat(["curl"], ["-fsSL"], ["--write-out", "{\"success\": \"true\", \"filename_effective\": \"lambda.py\"}", "-o", "${path.module}/lambda_function.py", "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py"])
   # depends_on = [data.external.git]
 }
 
 data "archive_file" "init" {
   type        = "zip"
-  source_file = "${path.module}/lambda.py"
+  source_file = "${path.module}/lambda_function.py"
   output_path = "${path.module}/lambda.zip"
   depends_on = [
     data.external.curl
