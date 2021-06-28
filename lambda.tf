@@ -124,7 +124,7 @@ module "artifact" {
 
 data "external" "curl" {
   # count      = module.this.enabled ? 1 : 0
-  program = concat(["curl"], ["-fsSL"], ["--write-out", "{\"success\": \"true\", \"filename_effective\": \"lambda.py\"}", "-o", "lambda.py", "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py"])
+  program = concat(["curl"], ["-fsSL"], ["--write-out", "{\"success\": \"true\", \"filename_effective\": \"lambda.py\"}", "-o", "${path.module}/lambda.py", "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py"])
   # depends_on = [data.external.git]
 }
 
