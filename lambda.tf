@@ -13,7 +13,10 @@ locals {
   dd_api_key_asm         = local.dd_api_key_resource == "asm" ? { DD_API_KEY_SECRET_ARN = local.dd_api_key_identifier } : {}
   dd_api_key_ssm         = local.dd_api_key_resource == "ssm" ? { DD_API_KEY_SSM_NAME = local.dd_api_key_identifier } : {}
   lambda_env             = merge(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
+
 }
+
+# Log Forwarder, RDS Enhanced Forwarder, VPC Flow Log Forwarder
 
 data "aws_ssm_parameter" "api_key" {
   count = local.lambda_enabled && local.dd_api_key_resource == "ssm" ? 1 : 0
@@ -109,6 +112,19 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 ## Get DD lambda zip artifact
 ## https://github.com/DataDog/datadog-serverless-functions/releases
 
+# https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}
+# https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}
+# https://github.com/DataDog/datadog-serverless-functions/releases/download/%v-$$${git_ref}/$$${filename}
+# https://github.com/DataDog/datadog-serverless-functions/releases/download/aws-dd-forwarder-3.34.0/aws-dd-forwarder-3.34.0.zip
+
+locals {
+  fwd_vers   = "3.34.0"
+  fwd_log    = forwarder_log_enabled ? { "log" = "https://github.com/DataDog/datadog-serverless-functions/releases/download/aws-dd-forwarder-${local.fwd_vers}/aws-dd-forwarder-${local.fwd_vers}.zip" } : {}
+  fwd_rds    = forwarder_rds_enabled ? { "rds" = "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py?ref=${local.fwd_vers}" } : {}
+  fwd_vpc    = forwarder_vpc_enabled ? { "vpc" = "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/vpc_flow_log_monitoring/lambda_function.py?ref=${local.fwd_vers}" } : {}
+  forwarder_zips  = merge(fwd_log)
+  forwarder_files = merge(fwd_rds, fwd_vpc)
+}
 
 module "artifact" {
   count = local.lambda_enabled ? 1 : 0
@@ -118,17 +134,16 @@ module "artifact" {
   filename    = local.filename
   module_name = var.dd_module_name
   module_path = path.module
-  git_ref     = var.dd_git_ref
   url         = local.url
 }
 
-data "external" "curl" {
-  # count      = module.this.enabled ? 1 : 0
-  program = concat(["curl"], ["-fsSL"], ["--write-out", "{\"success\": \"true\", \"filename_effective\": \"lambda.py\"}", "-o", "${path.module}/lambda_function.py", "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py"])
-  # depends_on = [data.external.git]
-}
+# data "external" "curl" {
+#   # count      = module.this.enabled ? 1 : 0
+#   program = concat(["curl"], ["-fsSL"], ["--write-out", "{\"success\": \"true\", \"filename_effective\": \"lambda_function.py\"}", "-o", "${path.module}/lambda_function.py", "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py"])
+#   # depends_on = [data.external.git]
+# }
 
-data "archive_file" "init" {
+data "archive_file" "lambdas" {
   type        = "zip"
   source_file = "${path.module}/lambda_function.py"
   output_path = "${path.module}/lambda.zip"
