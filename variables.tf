@@ -129,3 +129,33 @@ variable "dd_artifact_url" {
   description = "The URL template to format the full URL to the Datadog zip artifact"
   default     = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
 }
+
+variable "dd_forwarder_version" {
+  type        = string
+  description = "Version tag of datadog lambdas to use. https://github.com/DataDog/datadog-serverless-functions/releases"
+  default     = "3.34.0"
+}
+
+variable "forwarder_log_enabled" {
+  type        = bool
+  description = "Enable to add Datadog log forwarder"
+  default     = false
+}
+
+variable "forwarder_rds_enabled" {
+  type        = bool
+  description = "Enable to add Datadog RDS enhanced monitoring forwarder"
+  default     = true
+}
+
+variable "forwarder_vpc_enabled" {
+  type        = bool
+  description = "Enable to add Datadog VPC flow log forwarder"
+  default     = false
+}
+
+variable "forwarder_log_retention_days" {
+  type        = number
+  description = "Number of days to retain Datadog forwarder lambda execution logs. One of [0 1 3 5 7 14 30 60 90 120 150 180 365 400 545 731 1827 3653]"
+  default     = 14
+}
