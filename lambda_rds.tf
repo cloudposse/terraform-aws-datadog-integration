@@ -78,10 +78,13 @@ resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filt
 }
 
 resource "aws_cloudwatch_log_group" "forwarder_rds" {
+
   count = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
 
   name              = "/aws/lambda/${aws_lambda_function.forwarder_rds[0].function_name}"
   retention_in_days = var.forwarder_log_retention_days
+
+  kms_key_id = var.kms_key_id
 
   tags = var.tags
 }

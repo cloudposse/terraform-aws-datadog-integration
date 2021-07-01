@@ -145,7 +145,7 @@ variable "forwarder_log_enabled" {
 variable "forwarder_rds_enabled" {
   type        = bool
   description = "Enable to add Datadog RDS enhanced monitoring forwarder"
-  default     = false
+  default     = true
 }
 
 variable "forwarder_vpc_enabled" {
@@ -158,4 +158,10 @@ variable "forwarder_log_retention_days" {
   type        = number
   description = "Number of days to retain Datadog forwarder lambda execution logs. One of [0 1 3 5 7 14 30 60 90 120 150 180 365 400 545 731 1827 3653]"
   default     = 14
+}
+
+variable "kms_key_id" {
+  type        = string
+  description = "Optional kms key id to encrypt Datadog lambda function logs"
+  default     = null
 }
