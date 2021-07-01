@@ -2,7 +2,7 @@
 ## https://docs.datadoghq.com/integrations/amazon_rds/?tab=enhanced
 
 locals {
-  lambda_enabled         = module.this.enabled ? (var.forwarder_log_enabled || var.forwarder_rds_enabled || var.forwarder_vpc_enabled ? true : false ) : false
+  lambda_enabled         = module.this.enabled ? (var.forwarder_log_enabled || var.forwarder_rds_enabled || var.forwarder_vpc_enabled ? true : false) : false
   dd_api_key_resource    = var.dd_api_key_source.resource
   dd_api_key_identifier  = var.dd_api_key_source.identifier
   dd_api_key_arn         = local.dd_api_key_resource == "ssm" ? join("", data.aws_ssm_parameter.api_key.*.arn) : local.dd_api_key_identifier

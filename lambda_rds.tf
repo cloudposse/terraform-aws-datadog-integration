@@ -20,7 +20,7 @@ module "forwarder_rds" {
 
 
 data "archive_file" "forwarder_rds" {
-  count = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
+  count       = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
   type        = "zip"
   source_file = module.forwarder_rds[0].file
   output_path = "${path.module}/lambda.zip"
@@ -72,7 +72,7 @@ resource "aws_lambda_permission" "cloudwatch" {
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filter" {
-  count = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
+  count           = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
   name            = "datadog_log_subscription_filter"
   log_group_name  = "RDSOSMetrics"
   destination_arn = aws_lambda_function.forwarder_rds[0].arn
@@ -82,7 +82,7 @@ resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filt
 resource "aws_cloudwatch_log_group" "forwarder_rds" {
   count = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
 
-  name = "/aws/lambda/${aws_lambda_function.forwarder_rds[0].function_name}"
+  name              = "/aws/lambda/${aws_lambda_function.forwarder_rds[0].function_name}"
   retention_in_days = var.forwarder_log_retention_days
 
   tags = var.tags
