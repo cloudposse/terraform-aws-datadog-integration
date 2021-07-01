@@ -17,8 +17,6 @@ module "forwarder_rds" {
   url         = "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py?ref=${var.dd_forwarder_version}"
 }
 
-
-
 data "archive_file" "forwarder_rds" {
   count       = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
   type        = "zip"
