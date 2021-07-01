@@ -1,6 +1,3 @@
-######################################################################
-## https://docs.datadoghq.com/integrations/amazon_rds/?tab=enhanced
-
 locals {
   lambda_enabled         = module.this.enabled ? (var.forwarder_log_enabled || var.forwarder_rds_enabled || var.forwarder_vpc_enabled ? true : false) : false
   dd_api_key_resource    = var.dd_api_key_source.resource
@@ -11,7 +8,6 @@ locals {
   dd_api_key_asm         = local.dd_api_key_resource == "asm" ? { DD_API_KEY_SECRET_ARN = local.dd_api_key_identifier } : {}
   dd_api_key_ssm         = local.dd_api_key_resource == "ssm" ? { DD_API_KEY_SSM_NAME = local.dd_api_key_identifier } : {}
   lambda_env             = merge(local.dd_api_key_kms, local.dd_api_key_asm, local.dd_api_key_ssm)
-
 }
 
 # Log Forwarder, RDS Enhanced Forwarder, VPC Flow Log Forwarder
