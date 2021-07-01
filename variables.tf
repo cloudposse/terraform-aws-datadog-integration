@@ -145,7 +145,7 @@ variable "forwarder_log_enabled" {
 variable "forwarder_rds_enabled" {
   type        = bool
   description = "Enable to add Datadog RDS enhanced monitoring forwarder"
-  default     = true
+  default     = false
 }
 
 variable "forwarder_vpc_enabled" {
