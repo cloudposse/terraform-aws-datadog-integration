@@ -15,5 +15,5 @@ output "datadog_external_id" {
 
 output "lambda_rds_function_id" {
   value       = join("", aws_lambda_function.forwarder_rds.*.id)
-  description = "Lambda resource ID"
+  description = "Lambda RDS forwarder ID"
 }
