@@ -11,7 +11,7 @@ module "forwarder_rds" {
 
   source      = "cloudposse/module-artifact/external"
   version     = "0.7.0"
-  filename    = "forwarder_rds.py"
+  filename    = "forwarder-rds.py"
   module_name = var.dd_module_name
   module_path = path.module
   url         = "https://raw.githubusercontent.com/DataDog/datadog-serverless-functions/master/aws/rds_enhanced_monitoring/lambda_function.py?ref=${var.dd_forwarder_version}"
@@ -36,14 +36,14 @@ resource "aws_lambda_function" "forwarder_rds" {
   filename                       = data.archive_file.forwarder_rds[0].output_path
   function_name                  = module.lambda_label.id
   role                           = aws_iam_role.lambda[0].arn
-  handler                        = "forwarder_rds.lambda_handler"
+  handler                        = "forwarder-rds.lambda_handler"
   source_code_hash               = data.archive_file.forwarder_rds[0].output_base64sha256
   runtime                        = var.lambda_runtime
   reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
   tags                           = module.lambda_label.tags
 
   dynamic "vpc_config" {
-    for_each = var.subnet_ids != null && var.security_group_ids != null ? [true] : []
+    for_each = try(length(var.subnet_ids), 0) > 0 && try(length(var.security_group_ids), 0) > 0 ? [true] : []
     content {
       security_group_ids = var.security_group_ids
       subnet_ids         = var.subnet_ids
@@ -71,9 +71,9 @@ resource "aws_lambda_permission" "cloudwatch" {
 
 resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filter" {
   count           = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
-  name            = "datadog_log_subscription_filter"
+  name            = module.lambda_label.id
   log_group_name  = "RDSOSMetrics"
-  destination_arn = aws_lambda_function.forwarder_rds[0].arn
+  destination_arn = join("", aws_lambda_function.forwarder_rds.*.arn)
   filter_pattern  = ""
 }
 
