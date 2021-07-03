@@ -86,5 +86,5 @@ resource "aws_cloudwatch_log_group" "forwarder_rds" {
 
   kms_key_id = var.kms_key_id
 
-  tags = var.tags
+  tags = module.forwarder_rds_label.tags
 }
