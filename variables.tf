@@ -82,19 +82,19 @@ variable "dd_api_key_source" {
     error_message = "Provide one, and only one, ARN for (kms, asm) or name (ssm) to retrieve or decrypt Datadog api key."
   }
 
-  # Check kms arn format
+  # Check KMS ARN format
   validation {
     condition     = var.dd_api_key_source.resource == "kms" ? can(regex("arn:aws:kms:.*:key/.*", var.dd_api_key_source.identifier)) : true
     error_message = "ARN for KMS key does not appear to be valid format (example: arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab)."
   }
 
-  # Check asm arn format 
+  # Check ASM ARN format
   validation {
     condition     = var.dd_api_key_source.resource == "asm" ? can(regex("arn:aws:secretsmanager:.*:secret:.*", var.dd_api_key_source.identifier)) : true
     error_message = "ARN for AWS Secrets Manager (asm) does not appear to be valid format (example: arn:aws:secretsmanager:us-west-2:111122223333:secret:aes128-1a2b3c)."
   }
 
-  # Check ssm name format
+  # Check SSM name format
   validation {
     condition     = var.dd_api_key_source.resource == "ssm" ? can(regex("^[a-zA-Z0-9_./-]+$", var.dd_api_key_source.identifier)) : true
     error_message = "Name for SSM parameter does not appear to be valid format, acceptable characters are `a-zA-Z0-9_.-` and `/` to delineate hierarchies."
@@ -118,14 +118,45 @@ variable "dd_module_name" {
   description = "The Datadog GitHub repository name"
   default     = "datadog-serverless-functions"
 }
-variable "dd_git_ref" {
-  type        = string
-  description = "The version of the Datadog artifact zip file"
-  default     = "3.31.0"
-}
 
 variable "dd_artifact_url" {
   type        = string
   description = "The URL template to format the full URL to the Datadog zip artifact"
   default     = "https://github.com/DataDog/$$${module_name}/releases/download/%v-$$${git_ref}/$$${filename}"
+}
+
+variable "dd_forwarder_version" {
+  type        = string
+  description = "Version tag of datadog lambdas to use. https://github.com/DataDog/datadog-serverless-functions/releases"
+  default     = "3.34.0"
+}
+
+variable "forwarder_log_enabled" {
+  type        = bool
+  description = "Enable to add Datadog log forwarder"
+  default     = false
+}
+
+variable "forwarder_rds_enabled" {
+  type        = bool
+  description = "Enable to add Datadog RDS enhanced monitoring forwarder"
+  default     = false
+}
+
+variable "forwarder_vpc_enabled" {
+  type        = bool
+  description = "Enable to add Datadog VPC flow log forwarder"
+  default     = false
+}
+
+variable "forwarder_log_retention_days" {
+  type        = number
+  description = "Number of days to retain Datadog forwarder lambda execution logs. One of [0 1 3 5 7 14 30 60 90 120 150 180 365 400 545 731 1827 3653]"
+  default     = 14
+}
+
+variable "kms_key_id" {
+  type        = string
+  description = "Optional KMS key ID to encrypt Datadog lambda function logs"
+  default     = null
 }

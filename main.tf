@@ -2,8 +2,13 @@ data "aws_caller_identity" "current" {
   count = module.this.enabled ? 1 : 0
 }
 
+data "aws_region" "current" {
+  count = module.this.enabled ? 1 : 0
+}
+
 locals {
   aws_account_id      = join("", data.aws_caller_identity.current.*.account_id)
+  aws_region          = join("", data.aws_region.current.*.name)
   datadog_external_id = join("", datadog_integration_aws.integration.*.external_id)
 }
 
