@@ -34,7 +34,7 @@ resource "aws_lambda_function" "forwarder_rds" {
 
   description                    = "Datadog forwarder for RDS enhanced monitoring."
   filename                       = data.archive_file.forwarder_rds[0].output_path
-  function_name                  = module.lambda_label.id
+  function_name                  = module.forwarder_rds_label.id
   role                           = aws_iam_role.lambda[0].arn
   handler                        = "forwarder-rds.lambda_handler"
   source_code_hash               = data.archive_file.forwarder_rds[0].output_base64sha256
@@ -71,9 +71,9 @@ resource "aws_lambda_permission" "cloudwatch" {
 
 resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filter" {
   count           = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
-  name            = module.lambda_label.id
+  name            = module.forwarder_rds_label.id
   log_group_name  = "RDSOSMetrics"
-  destination_arn = join("", aws_lambda_function.forwarder_rds.*.arn)
+  destination_arn = aws_lambda_function.forwarder_rds[0].arn
   filter_pattern  = ""
 }
 
