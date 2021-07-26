@@ -57,7 +57,7 @@ resource "aws_lambda_function" "forwarder_log" {
 }
 
 resource "aws_lambda_permission" "allow_bucket" {
-  count = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+  count         = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.forwarder_log[0].arn
@@ -66,7 +66,7 @@ resource "aws_lambda_permission" "allow_bucket" {
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
-  count = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+  count  = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
   bucket = var.aws_cloudtrail_bucket_name
 
   lambda_function {
