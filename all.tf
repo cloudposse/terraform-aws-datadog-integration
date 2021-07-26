@@ -63,7 +63,6 @@ data "aws_iam_policy_document" "all" {
       "s3:ListBucket",
       "s3:ListObjects",
       "s3:GetObject",
-      "s3:*",
       "ses:Get*",
       "sns:List*",
       "sns:Publish",

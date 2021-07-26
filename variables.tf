@@ -160,3 +160,15 @@ variable "kms_key_id" {
   description = "Optional KMS key ID to encrypt Datadog lambda function logs"
   default     = null
 }
+
+variable "aws_cloudtrail_bucket_name" {
+  type        = string
+  description = "ARN of the Cloudtrail S3 bucket"
+  default     = ""
+}
+
+variable "aws_cloudtrail_kms_arns" {
+  type        = list(string)
+  description = "List of KMS ARNs for log decryption"
+  default     = []
+}
