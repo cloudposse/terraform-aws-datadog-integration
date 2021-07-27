@@ -1,5 +1,6 @@
 locals {
-  aws_cloudtrail_bucket_arn = "arn:aws:s3:::${var.aws_cloudtrail_bucket_name}"
+   aws_cloudtrail_bucket_arn = "arn:aws:s3:::${var.aws_cloudtrail_bucket_name}"
+   enabled_cloudtrail_logs = var.aws_cloudtrail_bucket_name != "" && local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
 }
 
 module "forwarder_log_label" {
@@ -56,8 +57,8 @@ resource "aws_lambda_function" "forwarder_log" {
   }
 }
 
-resource "aws_lambda_permission" "allow_bucket" {
-  count         = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+resource "aws_lambda_permission" "allow_cloudtrail_bucket" {
+  count         = local.enabled_cloudtrail_logs
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.forwarder_log[0].arn
@@ -65,8 +66,8 @@ resource "aws_lambda_permission" "allow_bucket" {
   source_arn    = local.aws_cloudtrail_bucket_arn
 }
 
-resource "aws_s3_bucket_notification" "bucket_notification" {
-  count  = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+resource "aws_s3_bucket_notification" "cloudtrail_bucket_notification" {
+  count  = local.enabled_cloudtrail_logs
   bucket = var.aws_cloudtrail_bucket_name
 
   lambda_function {
@@ -78,7 +79,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 }
 
 data "aws_iam_policy_document" "cloudtrail_log_bucket" {
-  count = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+  count = local.enabled_cloudtrail_logs
 
   statement {
     effect = "Allow"
@@ -111,14 +112,14 @@ data "aws_iam_policy_document" "cloudtrail_log_bucket" {
 }
 
 resource "aws_iam_policy" "datadog_cloudtrail" {
-  count       = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+  count       = local.enabled_cloudtrail_logs
   name        = module.forwarder_log_label.id
   description = "Policy for Datadog Cloudtrail integration"
   policy      = join("", data.aws_iam_policy_document.cloudtrail_log_bucket.*.json)
 }
 
 resource "aws_iam_role_policy_attachment" "datadog_cloudtrail" {
-  count      = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+  count      = local.enabled_cloudtrail_logs
   role       = join("", aws_iam_role.lambda.*.name)
   policy_arn = join("", aws_iam_policy.datadog_cloudtrail.*.arn)
 }
