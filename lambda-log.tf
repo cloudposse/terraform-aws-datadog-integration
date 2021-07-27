@@ -1,6 +1,6 @@
 locals {
-   aws_cloudtrail_bucket_arn = "arn:aws:s3:::${var.aws_cloudtrail_bucket_name}"
-   enabled_cloudtrail_logs = var.aws_cloudtrail_bucket_name != "" && local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+  aws_cloudtrail_bucket_arn = "arn:aws:s3:::${var.aws_cloudtrail_bucket_name}"
+  enabled_cloudtrail_logs   = var.aws_cloudtrail_bucket_name != "" && local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
 }
 
 module "forwarder_log_label" {
@@ -133,4 +133,23 @@ resource "aws_cloudwatch_log_group" "forwarder_log" {
   kms_key_id = var.kms_key_id
 
   tags = module.forwarder_log_label.tags
+}
+
+# Cloudwatch Log Groups
+resource "aws_lambda_permission" "cloudwatch" {
+  for_each = local.lambda_enabled && var.forwarder_rds_enabled ? toset(var.cloudwatch_forwarder_log_groups) : null
+
+  statement_id  = "datadog-forwarder-RDSCloudWatchLogsPermission"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.forwarder_log[0].function_name
+  principal     = "logs.amazonaws.com"
+  source_arn    = "arn:aws:logs:${local.aws_region}:${local.aws_account_id}:log-group:${each.key}:*"
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filter" {
+  for_each        = local.lambda_enabled && var.forwarder_rds_enabled ? toset(var.cloudwatch_forwarder_log_groups) : null
+  name            = module.forwarder_rds_label.id
+  log_group_name  = each.key
+  destination_arn = aws_lambda_function.forwarder_log[0].arn
+  filter_pattern  = ""
 }

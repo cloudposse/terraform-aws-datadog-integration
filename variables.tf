@@ -172,3 +172,9 @@ variable "aws_cloudtrail_kms_arns" {
   description = "List of KMS ARNs for log decryption"
   default     = []
 }
+
+variable "cloudwatch_forwarder_log_groups" {
+  type        = list(string)
+  description = "List of cloudwatch log groups that the lambda forwarder will send logs from"
+  default     = []
+}
