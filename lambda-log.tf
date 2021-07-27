@@ -136,7 +136,7 @@ resource "aws_cloudwatch_log_group" "forwarder_log" {
 }
 
 # Cloudwatch Log Groups
-resource "aws_lambda_permission" "cloudwatch" {
+resource "aws_lambda_permission" "cloudwatch_groups" {
   for_each = local.lambda_enabled && var.forwarder_log_enabled ? toset(var.cloudwatch_forwarder_log_groups) : null
 
   statement_id  = "datadog-forwarder-${each.key}Permission"
@@ -146,7 +146,7 @@ resource "aws_lambda_permission" "cloudwatch" {
   source_arn    = "arn:aws:logs:${local.aws_region}:${local.aws_account_id}:log-group:${each.key}:*"
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "datadog_log_subscription_filter" {
+resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_subscription_filter" {
   for_each        = local.lambda_enabled && var.forwarder_log_enabled ? toset(var.cloudwatch_forwarder_log_groups) : null
   name            = module.forwarder_log_label.id
   log_group_name  = each.key
