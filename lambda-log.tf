@@ -75,7 +75,7 @@ resource "aws_s3_bucket_notification" "cloudtrail_bucket_notification" {
     events              = ["s3:ObjectCreated:*"]
   }
 
-  depends_on = [aws_lambda_permission.allow_bucket]
+  depends_on = [aws_lambda_permission.allow_cloudtrail_bucket]
 }
 
 data "aws_iam_policy_document" "cloudtrail_log_bucket" {
