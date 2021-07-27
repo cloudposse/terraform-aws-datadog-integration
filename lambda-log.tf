@@ -1,6 +1,6 @@
 locals {
-   aws_cloudtrail_bucket_arn = "arn:aws:s3:::${var.aws_cloudtrail_bucket_name}"
-   enabled_cloudtrail_logs = var.aws_cloudtrail_bucket_name != "" && local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+  aws_cloudtrail_bucket_arn = "arn:aws:s3:::${var.aws_cloudtrail_bucket_name}"
+  enabled_cloudtrail_logs   = var.aws_cloudtrail_bucket_name != "" && local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
 }
 
 module "forwarder_log_label" {
