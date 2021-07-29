@@ -143,7 +143,7 @@ variable "forwarder_rds_enabled" {
   default     = false
 }
 
-variable "forwarder_vpc_enabled" {
+variable "forwarder_vpc_logs_enabled" {
   type        = bool
   description = "Enable to add Datadog VPC flow log forwarder"
   default     = false
