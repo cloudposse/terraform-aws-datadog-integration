@@ -1,6 +1,5 @@
 locals {
   enabled_s3_logs = local.lambda_enabled && var.s3_bucket_arns != {} && var.forwarder_log_enabled
-  # enabled_cloudtrail_logs   = var.aws_cloudtrail_bucket_name != "" && local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
 }
 
 module "forwarder_log_label" {

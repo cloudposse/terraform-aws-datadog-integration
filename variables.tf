@@ -163,13 +163,13 @@ variable "kms_key_id" {
 
 variable "s3_bucket_arns" {
   type        = map(string)
-  description = "ARN of the Cloudtrail S3 bucket"
+  description = "The Names and ARNs of S3 buckets to forward logs to Datadog"
   default     = {}
 }
 
 variable "s3_bucket_kms_arns" {
   type        = list(string)
-  description = "List of KMS ARNs for log decryption"
+  description = "List of KMS ARNs keys of the encrypted buckets"
   default     = []
 }
 
