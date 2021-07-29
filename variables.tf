@@ -161,13 +161,13 @@ variable "kms_key_id" {
   default     = null
 }
 
-variable "aws_cloudtrail_bucket_name" {
-  type        = string
+variable "s3_bucket_arns" {
+  type        = map(string)
   description = "ARN of the Cloudtrail S3 bucket"
-  default     = ""
+  default     = {}
 }
 
-variable "aws_cloudtrail_kms_arns" {
+variable "s3_bucket_kms_arns" {
   type        = list(string)
   description = "List of KMS ARNs for log decryption"
   default     = []

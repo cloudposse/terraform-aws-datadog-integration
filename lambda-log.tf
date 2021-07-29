@@ -1,6 +1,6 @@
 locals {
-  aws_cloudtrail_bucket_arn = "arn:aws:s3:::${var.aws_cloudtrail_bucket_name}"
-  enabled_cloudtrail_logs   = var.aws_cloudtrail_bucket_name != "" && local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
+  enabled_s3_logs = local.lambda_enabled && var.s3_bucket_arns != {} && var.forwarder_log_enabled
+  # enabled_cloudtrail_logs   = var.aws_cloudtrail_bucket_name != "" && local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
 }
 
 module "forwarder_log_label" {
@@ -57,29 +57,29 @@ resource "aws_lambda_function" "forwarder_log" {
   }
 }
 
-resource "aws_lambda_permission" "allow_cloudtrail_bucket" {
-  count         = local.enabled_cloudtrail_logs
+resource "aws_lambda_permission" "allow_s3_bucket" {
+  for_each      = local.enabled_s3_logs ? var.s3_bucket_arns : {}
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.forwarder_log[0].arn
   principal     = "s3.amazonaws.com"
-  source_arn    = local.aws_cloudtrail_bucket_arn
+  source_arn    = local.aws_s3_bucket_arn
 }
 
-resource "aws_s3_bucket_notification" "cloudtrail_bucket_notification" {
-  count  = local.enabled_cloudtrail_logs
-  bucket = var.aws_cloudtrail_bucket_name
+resource "aws_s3_bucket_notification" "s3_bucket_notification" {
+  for_each = local.enabled_s3_logs ? var.s3_bucket_arns : {}
+  bucket   = each.name
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.forwarder_log[0].arn
     events              = ["s3:ObjectCreated:*"]
   }
 
-  depends_on = [aws_lambda_permission.allow_cloudtrail_bucket]
+  depends_on = [aws_lambda_permission.allow_s3_bucket]
 }
 
-data "aws_iam_policy_document" "cloudtrail_log_bucket" {
-  count = local.enabled_cloudtrail_logs
+data "aws_iam_policy_document" "s3_log_bucket" {
+  for_each = local.enabled_s3_logs ? var.s3_bucket_arns : {}
 
   statement {
     effect = "Allow"
@@ -92,13 +92,13 @@ data "aws_iam_policy_document" "cloudtrail_log_bucket" {
     ]
 
     resources = [
-      local.aws_cloudtrail_bucket_arn,
-      "${local.aws_cloudtrail_bucket_arn}/*",
+      each.value,
+      "${each.value}/*",
     ]
   }
 
   dynamic "statement" {
-    for_each = try(length(var.aws_cloudtrail_kms_arns), 0) > 0 ? [true] : []
+    for_each = try(length(var.s3_bucket_kms_arns), 0) > 0 ? [true] : []
     content {
       effect = "Allow"
 
@@ -106,24 +106,25 @@ data "aws_iam_policy_document" "cloudtrail_log_bucket" {
         "kms:Decrypt"
       ]
 
-      resources = var.aws_cloudtrail_kms_arns
+      resources = var.s3_bucket_kms_arns
     }
   }
 }
 
-resource "aws_iam_policy" "datadog_cloudtrail" {
-  count       = local.enabled_cloudtrail_logs
+resource "aws_iam_policy" "datadog_s3" {
+  for_each    = local.enabled_s3_logs ? var.s3_bucket_arns : {}
   name        = module.forwarder_log_label.id
-  description = "Policy for Datadog Cloudtrail integration"
-  policy      = join("", data.aws_iam_policy_document.cloudtrail_log_bucket.*.json)
+  description = "Policy for Datadog S3 integration"
+  policy      = join("", data.aws_iam_policy_document.s3_log_bucket.*.json)
 }
 
-resource "aws_iam_role_policy_attachment" "datadog_cloudtrail" {
-  count      = local.enabled_cloudtrail_logs
+resource "aws_iam_role_policy_attachment" "datadog_s3" {
+  for_each   = local.enabled_s3_logs ? var.s3_bucket_arns : {}
   role       = join("", aws_iam_role.lambda.*.name)
-  policy_arn = join("", aws_iam_policy.datadog_cloudtrail.*.arn)
+  policy_arn = join("", aws_iam_policy.datadog_s3.*.arn)
 }
 
+# Lambda Forwarder logs
 resource "aws_cloudwatch_log_group" "forwarder_log" {
   count = local.lambda_enabled && var.forwarder_log_enabled ? 1 : 0
 
