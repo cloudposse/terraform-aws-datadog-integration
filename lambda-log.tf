@@ -67,7 +67,7 @@ resource "aws_lambda_permission" "allow_s3_bucket" {
 
 resource "aws_s3_bucket_notification" "s3_bucket_notification" {
   for_each = local.enabled_s3_logs ? var.s3_bucket_arns : {}
-  bucket   = each.name
+  bucket   = each.key
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.forwarder_log[0].arn
