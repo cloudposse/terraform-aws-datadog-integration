@@ -62,7 +62,7 @@ resource "aws_lambda_permission" "allow_s3_bucket" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.forwarder_log[0].arn
   principal     = "s3.amazonaws.com"
-  source_arn    = local.aws_s3_bucket_arn
+  source_arn    = each.value
 }
 
 resource "aws_s3_bucket_notification" "s3_bucket_notification" {
