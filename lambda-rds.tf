@@ -59,7 +59,7 @@ resource "aws_lambda_function" "forwarder_rds" {
   }
 }
 
-resource "aws_lambda_permission" "cloudwatch" {
+resource "aws_lambda_permission" "cloudwatch_enhance_rds" {
   count = local.lambda_enabled && var.forwarder_rds_enabled ? 1 : 0
 
   statement_id  = "datadog-forwarder-RDSCloudWatchLogsPermission"

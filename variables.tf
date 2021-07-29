@@ -174,7 +174,13 @@ variable "aws_cloudtrail_kms_arns" {
 }
 
 variable "cloudwatch_forwarder_log_groups" {
-  type        = list(string)
+  type        = map(string)
   description = "List of cloudwatch log groups that the lambda forwarder will send logs from"
-  default     = []
+  default     = {}
+}
+
+variable "forwarder_lambda_debug_enabled" {
+  type        = bool
+  description = "Whether to enable or disable debug for the lambda forwarder"
+  default     = false
 }

@@ -137,19 +137,19 @@ resource "aws_cloudwatch_log_group" "forwarder_log" {
 
 # Cloudwatch Log Groups
 resource "aws_lambda_permission" "cloudwatch_groups" {
-  for_each = local.lambda_enabled && var.forwarder_log_enabled ? toset(var.cloudwatch_forwarder_log_groups) : []
+  for_each = local.lambda_enabled && var.forwarder_log_enabled ? var.cloudwatch_forwarder_log_groups : {}
 
-  statement_id  = "datadog-forwarder-${each.key}Permission"
+  statement_id  = "datadog-forwarder-${each.key}-permission"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.forwarder_log[0].function_name
-  principal     = "logs.amazonaws.com"
-  source_arn    = "arn:aws:logs:${local.aws_region}:${local.aws_account_id}:log-group:${each.key}:*"
+  principal     = "logs.${local.aws_region}.amazonaws.com"
+  source_arn    = "arn:aws:logs:${local.aws_region}:${local.aws_account_id}:log-group:${each.value}:*"
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_subscription_filter" {
-  for_each        = local.lambda_enabled && var.forwarder_log_enabled ? toset(var.cloudwatch_forwarder_log_groups) : []
+  for_each        = local.lambda_enabled && var.forwarder_log_enabled ? var.cloudwatch_forwarder_log_groups : {}
   name            = module.forwarder_log_label.id
-  log_group_name  = each.key
+  log_group_name  = each.value
   destination_arn = aws_lambda_function.forwarder_log[0].arn
   filter_pattern  = ""
 }
