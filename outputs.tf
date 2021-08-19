@@ -12,8 +12,3 @@ output "datadog_external_id" {
   value       = join("", datadog_integration_aws.integration.*.external_id)
   description = "Datadog integration external ID"
 }
-
-output "lambda_rds_function_id" {
-  value       = join("", aws_lambda_function.forwarder_rds.*.id)
-  description = "Lambda RDS forwarder ID"
-}
