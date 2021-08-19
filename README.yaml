@@ -47,6 +47,9 @@ related:
   - name: "terraform-datadog-monitor"
     description: "Terraform module to provision Standard System Monitors (cpu, memory, swap, io, etc) in Datadog"
     url: "https://github.com/cloudposse/terraform-datadog-monitor"
+  - name: "terraform-aws-datadog-lambda-forwarder"
+    description: "Terraform module to provision all the necessary infrastructure to deploy [Datadog Lambda forwarders](https://github.com/DataDog/datadog-serverless-functions/tree/master/aws/logs_monitoring)"
+    url: "https://github.com/cloudposse/terraform-aws-datadog-lambda-forwarder"
 
 # Short description of this project
 description: |-
@@ -106,3 +109,5 @@ contributors:
     github: "osterman"
   - name: "Andriy Knysh"
     github: "aknysh"
+  - name: "PePe Amengual"
+    github: "jamengual"
