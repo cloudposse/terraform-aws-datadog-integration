@@ -33,37 +33,6 @@ variable "account_specific_namespace_rules" {
   description = "An object, (in the form {\"namespace1\":true/false, \"namespace2\":true/false} ), that enables or disables metric collection for specific AWS namespaces for this AWS account only"
 }
 
-variable "subnet_ids" {
-  description = "List of subnet IDs to use when running in a specific VPC."
-  type        = list(string)
-  default     = null
-}
-
-variable "security_group_ids" {
-  description = "List of security group IDs used when Lambda Function should run in the VPC"
-  type        = list(string)
-  default     = null
-}
-
-#https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
-variable "lambda_reserved_concurrent_executions" {
-  type        = number
-  description = "Amount of reserved concurrent executions for this lambda function. A value of 0 disables lambda from being triggered and -1 removes any concurrency limitations. Defaults to Unreserved Concurrency Limits -1."
-  default     = -1
-}
-
-variable "lambda_runtime" {
-  type        = string
-  description = "Runtime environment for Datadog lambda."
-  default     = "python3.7"
-}
-
-variable "tracing_config_mode" {
-  type        = string
-  description = "Can be either PassThrough or Active. If PassThrough, Lambda will only trace the request from an upstream service if it contains a tracing header with 'sampled=1'. If Active, Lambda will respect any tracing header it receives from an upstream service."
-  default     = "PassThrough"
-}
-
 variable "dd_api_key_source" {
   description = "One of: ARN for AWS Secrets Manager (asm) to retrieve the Datadog (DD) api key, ARN for the KMS (kms) key used to decrypt the ciphertext_blob of the api key, or the name of the SSM (ssm) parameter used to retrieve the Datadog API key."
   type = object({
