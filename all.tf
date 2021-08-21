@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "all" {
 
 module "all_label" {
   source  = "cloudposse/label/null"
-  version = "0.24.1"
+  version = "0.25.0"
 
   attributes = compact(concat(module.this.attributes, ["all"]))
 

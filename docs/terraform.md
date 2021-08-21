@@ -20,8 +20,8 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_all_label"></a> [all\_label](#module\_all\_label) | cloudposse/label/null | 0.24.1 |
-| <a name="module_core_label"></a> [core\_label](#module\_core\_label) | cloudposse/label/null | 0.24.1 |
+| <a name="module_all_label"></a> [all\_label](#module\_all\_label) | cloudposse/label/null | 0.25.0 |
+| <a name="module_core_label"></a> [core\_label](#module\_core\_label) | cloudposse/label/null | 0.25.0 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 
 ## Resources
