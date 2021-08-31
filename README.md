@@ -1,4 +1,4 @@
-       
+
 <!-- markdownlint-disable -->
 # terraform-aws-datadog-integration [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-datadog-integration.svg)](https://github.com/cloudposse/terraform-aws-datadog-integration/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 <!-- markdownlint-restore -->
