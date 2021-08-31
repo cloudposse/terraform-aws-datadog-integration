@@ -1,3 +1,5 @@
+data "aws_partition" "current" {}
+
 data "aws_caller_identity" "current" {
   count = module.this.enabled ? 1 : 0
 }
@@ -39,7 +41,7 @@ data "aws_iam_policy_document" "assume_role" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${var.datadog_aws_account_id}:root"
+        "arn:${data.aws_partition.current.partition}:iam::${var.datadog_aws_account_id}:root"
       ]
     }
 
