@@ -8,7 +8,5 @@ module "datadog_integration" {
   excluded_regions                 = var.excluded_regions
   account_specific_namespace_rules = var.account_specific_namespace_rules
 
-  dd_api_key_source = var.dd_api_key_source
-
   context = module.this.context
 }
