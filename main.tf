@@ -59,3 +59,10 @@ resource "aws_iam_role" "default" {
   name               = module.this.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
 }
+
+# https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#resource-collection
+resource "aws_iam_role_policy_attachment" "security_audit" {
+  count      = local.enabled && var.security_audit_policy_enabled ? 1 : 0
+  role       = join("", aws_iam_role.default.*.name)
+  policy_arn = format("arn:%s:iam::aws:policy/SecurityAudit", local.aws_partition)
+}
