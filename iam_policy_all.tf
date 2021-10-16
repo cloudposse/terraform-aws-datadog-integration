@@ -1,5 +1,7 @@
+# https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#datadog-aws-iam-policy
+
 data "aws_iam_policy_document" "all" {
-  count = module.this.enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   statement {
     sid    = "DatadogAll"
@@ -13,6 +15,7 @@ data "aws_iam_policy_document" "all" {
       "cloudfront:ListDistributions",
       "cloudtrail:DescribeTrails",
       "cloudtrail:GetTrailStatus",
+      "cloudtrail:LookupEvents",
       "cloudwatch:Describe*",
       "cloudwatch:Get*",
       "cloudwatch:List*",
@@ -28,12 +31,15 @@ data "aws_iam_policy_document" "all" {
       "elasticache:List*",
       "elasticfilesystem:DescribeFileSystems",
       "elasticfilesystem:DescribeTags",
+      "elasticfilesystem:DescribeAccessPoints",
       "elasticloadbalancing:Describe*",
       "elasticmapreduce:List*",
       "elasticmapreduce:Describe*",
       "es:ListTags",
       "es:ListDomainNames",
       "es:DescribeElasticsearchDomains",
+      "fsx:DescribeFileSystems",
+      "fsx:ListTagsForResource",
       "health:DescribeEvents",
       "health:DescribeEventDetails",
       "health:DescribeAffectedEntities",
@@ -47,7 +53,13 @@ data "aws_iam_policy_document" "all" {
       "logs:TestMetricFilter",
       "logs:PutSubscriptionFilter",
       "logs:DeleteSubscriptionFilter",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
       "logs:DescribeSubscriptionFilters",
+      "logs:FilterLogEvents",
+      "logs:PutSubscriptionFilter",
+      "logs:TestMetricFilter",
+      "organizations:DescribeOrganization",
       "rds:Describe*",
       "rds:List*",
       "redshift:DescribeClusters",
@@ -90,7 +102,7 @@ module "all_label" {
 }
 
 locals {
-  all_count = module.this.enabled && contains(split(",", lower(join(",", var.integrations))), "all") ? 1 : 0
+  all_count = local.enabled && contains(split(",", lower(join(",", var.integrations))), "all") ? 1 : 0
 }
 
 resource "aws_iam_policy" "all" {

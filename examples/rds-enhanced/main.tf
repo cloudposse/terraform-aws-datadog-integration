@@ -7,6 +7,7 @@ module "datadog_integration" {
   host_tags                        = var.host_tags
   excluded_regions                 = var.excluded_regions
   account_specific_namespace_rules = var.account_specific_namespace_rules
+  security_audit_policy_enabled    = var.security_audit_policy_enabled
 
   context = module.this.context
 }

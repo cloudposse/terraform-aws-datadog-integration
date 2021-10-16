@@ -1,5 +1,7 @@
+# https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#datadog-aws-iam-policy
+
 data "aws_iam_policy_document" "core" {
-  count = module.this.enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   statement {
     sid    = "DatadogCore"
@@ -29,7 +31,7 @@ module "core_label" {
 }
 
 locals {
-  core_count = module.this.enabled && contains(split(",", lower(join(",", var.integrations))), "core") ? 1 : 0
+  core_count = local.enabled && contains(split(",", lower(join(",", var.integrations))), "core") ? 1 : 0
 }
 
 resource "aws_iam_policy" "core" {

@@ -32,3 +32,9 @@ variable "account_specific_namespace_rules" {
   default     = null
   description = "An object, (in the form {\"namespace1\":true/false, \"namespace2\":true/false} ), that enables or disables metric collection for specific AWS namespaces for this AWS account only"
 }
+
+variable "security_audit_policy_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable/disable attaching the AWS managed `SecurityAudit` policy to the Datadog IAM role to collect information about how AWS resources are configured (used in Datadog Cloud Security Posture Management to read security configuration metadata)"
+}

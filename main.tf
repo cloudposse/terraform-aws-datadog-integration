@@ -1,18 +1,22 @@
-data "aws_partition" "current" {}
-
-data "aws_caller_identity" "current" {
-  count = module.this.enabled ? 1 : 0
+locals {
+  enabled             = module.this.enabled
+  aws_account_id      = join("", data.aws_caller_identity.current.*.account_id)
+  aws_partition       = join("", data.aws_partition.current.*.partition)
+  datadog_external_id = join("", datadog_integration_aws.integration.*.external_id)
 }
 
-locals {
-  aws_account_id      = join("", data.aws_caller_identity.current.*.account_id)
-  datadog_external_id = join("", datadog_integration_aws.integration.*.external_id)
+data "aws_partition" "current" {
+  count = local.enabled ? 1 : 0
+}
+
+data "aws_caller_identity" "current" {
+  count = local.enabled ? 1 : 0
 }
 
 # https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/integration_aws
 # https://docs.datadoghq.com/api/v1/aws-integration/
 resource "datadog_integration_aws" "integration" {
-  count                            = module.this.enabled ? 1 : 0
+  count                            = local.enabled ? 1 : 0
   account_id                       = local.aws_account_id
   role_name                        = module.this.id
   filter_tags                      = var.filter_tags
@@ -22,7 +26,7 @@ resource "datadog_integration_aws" "integration" {
 }
 
 data "aws_iam_policy_document" "assume_role" {
-  count = module.this.enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   statement {
     sid    = "DatadogAWSTrustRelationship"
@@ -36,7 +40,7 @@ data "aws_iam_policy_document" "assume_role" {
       type = "AWS"
 
       identifiers = [
-        "arn:${data.aws_partition.current.partition}:iam::${var.datadog_aws_account_id}:root"
+        "arn:${local.aws_partition}:iam::${var.datadog_aws_account_id}:root"
       ]
     }
 
@@ -51,7 +55,14 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "default" {
-  count              = module.this.enabled ? 1 : 0
+  count              = local.enabled ? 1 : 0
   name               = module.this.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
+}
+
+# https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#resource-collection
+resource "aws_iam_role_policy_attachment" "security_audit" {
+  count      = local.enabled && var.security_audit_policy_enabled ? 1 : 0
+  role       = join("", aws_iam_role.default.*.name)
+  policy_arn = format("arn:%s:iam::aws:policy/SecurityAudit", local.aws_partition)
 }
