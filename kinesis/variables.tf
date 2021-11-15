@@ -1,5 +1,5 @@
 variable "datadog_api_key_ssm_parameter_name" {
-  type      = string
+  type = string
 }
 
 variable "datadog_metric_stream_namespace_list" {

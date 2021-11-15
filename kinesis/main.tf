@@ -9,7 +9,7 @@ data "aws_ssm_parameter" "datadog_api_key" {
 
 locals {
   backup_bucket_arn = var.backup_bucket_arn
-  datadog_api_key = data.aws_ssm_parameter.datadog_api_key.value
+  datadog_api_key   = data.aws_ssm_parameter.datadog_api_key.value
 }
 
 ## Kinesis Firehose

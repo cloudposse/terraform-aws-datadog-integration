@@ -7,19 +7,19 @@ variable "datadog_aws_account_id" {
 variable "enable_kinesis" {
   type        = bool
   description = "Enable Kinesis integration"
-  default = false
+  default     = false
 }
 
 variable "kinesis_bucket_arn" {
-  type        = bool
+  type        = string
   description = "ARN for kinesis retry bucket"
-  default = ""
+  default     = ""
 }
 
 variable "kinesis_endpoint" {
-  type = string
+  type        = string
   description = "Endpoint for kinesis"
-  default = "https://awsmetrics-intake.datadoghq.com/v1/input"
+  default     = "https://awsmetrics-intake.datadoghq.com/v1/input"
 }
 
 variable "integrations" {

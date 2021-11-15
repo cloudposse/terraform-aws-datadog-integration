@@ -26,10 +26,10 @@ resource "datadog_integration_aws" "integration" {
 }
 
 module "kinesis" {
-  source = "./kinesis"
-  bucker_arn = var.kinesis_bucket_arn
+  source                             = "./kinesis"
+  bucker_arn                         = var.kinesis_bucket_arn
   datadog_api_key_ssm_parameter_name = var.kinesis_api_key_ssm_parameter_name
-  datadog_firehose_endpoint = var.kinesis_firehose_endpoint
+  datadog_firehose_endpoint          = var.kinesis_firehose_endpoint
 }
 
 data "aws_iam_policy_document" "assume_role" {
