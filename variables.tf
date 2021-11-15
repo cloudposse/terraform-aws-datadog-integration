@@ -16,6 +16,12 @@ variable "kinesis_bucket_arn" {
   default     = ""
 }
 
+variable "kinesis_api_key_ssm_parameter_name" {
+  type = string
+  description = "SSM param for Datadog api key to use for kinesis auth"
+  default = ""
+}
+
 variable "kinesis_endpoint" {
   type        = string
   description = "Endpoint for kinesis"
