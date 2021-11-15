@@ -26,7 +26,9 @@ resource "datadog_integration_aws" "integration" {
 }
 
 module "kinesis" {
-  source                             = "./kinesis"
+  source  = "./kinesis"
+  context = module.this.context
+
   backup_bucket_arn                  = var.kinesis_bucket_arn
   datadog_api_key_ssm_parameter_name = var.kinesis_api_key_ssm_parameter_name
   datadog_firehose_endpoint          = var.kinesis_firehose_endpoint
