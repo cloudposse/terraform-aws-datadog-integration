@@ -2,6 +2,11 @@ variable "datadog_api_key_ssm_parameter_name" {
   type = string
 }
 
+variable "backup_bucket_arn" {
+  type        = string
+  description = "Bucket for kinesis retries"
+}
+
 variable "datadog_metric_stream_namespace_list" {
   type    = list(string)
   default = []
