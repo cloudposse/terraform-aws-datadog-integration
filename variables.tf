@@ -4,6 +4,24 @@ variable "datadog_aws_account_id" {
   default     = "464622532012"
 }
 
+variable "enable_kinesis" {
+  type        = bool
+  description = "Enable Kinesis integration"
+  default = false
+}
+
+variable "kinesis_bucket_arn" {
+  type        = bool
+  description = "ARN for kinesis retry bucket"
+  default = ""
+}
+
+variable "kinesis_endpoint" {
+  type = string
+  description = "Endpoint for kinesis"
+  default = "https://awsmetrics-intake.datadoghq.com/v1/input"
+}
+
 variable "integrations" {
   type        = list(string)
   description = "List of AWS permission names to apply for different integrations (e.g. 'all', 'core')"
