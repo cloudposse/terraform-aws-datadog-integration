@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "metrics_delivery" {
 }
 
 resource "aws_iam_role" "stream" {
-  name               = module.this.id
+  name               = "${module.this.id}-metrics"
   assume_role_policy = data.aws_iam_policy_document.metrics_sts.json
 
   inline_policy {
