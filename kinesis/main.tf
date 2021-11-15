@@ -57,67 +57,6 @@ resource "aws_kinesis_firehose_delivery_stream" "datadog" {
   }
 }
 
-# IAM policies and role
-data "aws_iam_policy_document" "metrics_sts" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      identifiers = ["streams.metrics.cloudwatch.amazonaws.com"]
-      type        = "Service"
-    }
-  }
-}
-
-resource "aws_iam_role" "stream" {
-  name               = module.this.id
-  assume_role_policy = data.aws_iam_policy_document.metrics_sts.json
-}
-
-data "aws_iam_policy_document" "firehose_delivery" {
-  statement {
-    actions = [
-      "firehose:PutRecord",
-      "firehose:PutRecordBatch",
-    ]
-
-    resources = [aws_kinesis_firehose_delivery_stream.datadog.arn]
-  }
-}
-
-data "aws_iam_policy_document" "firehose_sts" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      identifiers = ["firehose.amazonaws.com"]
-      type        = "Service"
-    }
-  }
-}
-
-data "aws_iam_policy_document" "datadog_firehose_s3_backup" {
-  statement {
-    actions = [
-      "s3:GetBucketLocation",
-      "s3:ListBucket",
-      "s3:ListBucketMultipartUploads",
-    ]
-
-    resources = [local.backup_bucket_arn]
-  }
-
-  statement {
-    actions = [
-      "s3:AbortMultipartUpload",
-      "s3:GetObject",
-      "s3:PutObject",
-    ]
-
-    resources = ["${local.backup_bucket_arn}/*"]
-  }
-}
-
 ## CloudWatch metric stream
 resource "aws_cloudwatch_metric_stream" "datadog" {
   name          = module.this.id
@@ -133,26 +72,4 @@ resource "aws_cloudwatch_metric_stream" "datadog" {
       namespace = item.value
     }
   }
-}
-
-resource "aws_iam_role_policy" "firehose_delivery" {
-  name   = "firehose"
-  policy = data.aws_iam_policy_document.firehose_delivery.json
-  role   = aws_iam_role.datadog_metric_stream.id
-}
-
-resource "aws_iam_role" "datadog_firehose" {
-  name               = "datadog-firehose"
-  assume_role_policy = data.aws_iam_policy_document.firehose_sts.json
-}
-
-resource "aws_iam_role_policy" "datadog_firehose_s3_backup" {
-  name   = "s3-backup"
-  policy = data.aws_iam_policy_document.datadog_firehose_s3_backup.json
-  role   = aws_iam_role.datadog_firehose.id
-}
-
-## Kinesis Firehose - S3 error/backup bucket
-resource "aws_s3_bucket" "datadog_firehose_backup" {
-  bucket = module.this.id
 }
