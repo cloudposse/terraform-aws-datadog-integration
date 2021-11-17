@@ -26,6 +26,7 @@ resource "datadog_integration_aws" "integration" {
 }
 
 module "kinesis" {
+  count = var.kinesis_enabled ? 1 : 0
   source  = "./kinesis"
   context = module.this.context
 
