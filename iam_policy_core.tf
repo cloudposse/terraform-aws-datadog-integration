@@ -38,6 +38,7 @@ resource "aws_iam_policy" "core" {
   count  = local.core_count
   name   = module.core_label.id
   policy = join("", data.aws_iam_policy_document.core.*.json)
+  tags   = module.core_label.tags
 }
 
 resource "aws_iam_role_policy_attachment" "core" {
