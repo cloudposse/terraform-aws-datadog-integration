@@ -58,6 +58,7 @@ resource "aws_iam_role" "default" {
   count              = local.enabled ? 1 : 0
   name               = module.this.id
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
+  tags               = module.this.tags
 }
 
 # https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#resource-collection

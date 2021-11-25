@@ -116,16 +116,16 @@ lists under "All Permissions" as the maximal set of permissions required, so you
 Include this module in your existing terraform code:
 
 ```hcl
-  module "datadog_integration" {
-    source = "cloudposse/datadog-integration/aws"
-    # Cloud Posse recommends pinning every module to a specific version
-    # version     = "x.x.x"
+module "datadog_integration" {
+  source = "cloudposse/datadog-integration/aws"
+  # Cloud Posse recommends pinning every module to a specific version
+  # version     = "x.x.x"
 
-    namespace                  = "eg"
-    stage                      = "test"
-    name                       = "datadog"
-    integrations               = ["all"]
-  }
+  namespace                  = "eg"
+  stage                      = "test"
+  name                       = "datadog"
+  integrations               = ["all"]
+}
 ```
 
 The DataDog integration will be linked with your configured datadog account via the provider's `api_key`.
@@ -157,16 +157,15 @@ Available targets:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.0 |
-| <a name="requirement_datadog"></a> [datadog](#requirement\_datadog) | >= 2.13 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.3 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.0 |
+| <a name="requirement_datadog"></a> [datadog](#requirement\_datadog) | >= 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.0 |
-| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 2.13 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.0 |
+| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.0 |
 
 ## Modules
 
@@ -380,8 +379,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 ### Contributors
 
 <!-- markdownlint-disable -->
-|  [![Sergey Vasilyev][s2504s_avatar]][s2504s_homepage]<br/>[Sergey Vasilyev][s2504s_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![PePe Amengual][jamengual_avatar]][jamengual_homepage]<br/>[PePe Amengual][jamengual_homepage] |
-|---|---|---|---|
+|  [![Sergey Vasilyev][s2504s_avatar]][s2504s_homepage]<br/>[Sergey Vasilyev][s2504s_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![PePe Amengual][jamengual_avatar]][jamengual_homepage]<br/>[PePe Amengual][jamengual_homepage] | [![RB][nitrocode_avatar]][nitrocode_homepage]<br/>[RB][nitrocode_homepage] |
+|---|---|---|---|---|
 <!-- markdownlint-restore -->
 
   [s2504s_homepage]: https://github.com/s2504s
@@ -392,6 +391,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
   [aknysh_avatar]: https://img.cloudposse.com/150x150/https://github.com/aknysh.png
   [jamengual_homepage]: https://github.com/jamengual
   [jamengual_avatar]: https://img.cloudposse.com/150x150/https://github.com/jamengual.png
+  [nitrocode_homepage]: https://github.com/nitrocode
+  [nitrocode_avatar]: https://img.cloudposse.com/150x150/https://github.com/nitrocode.png
 
 [![README Footer][readme_footer_img]][readme_footer_link]
 [![Beacon][beacon]][website]

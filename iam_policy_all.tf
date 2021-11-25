@@ -109,6 +109,7 @@ resource "aws_iam_policy" "all" {
   count  = local.all_count
   name   = module.all_label.id
   policy = join("", data.aws_iam_policy_document.all.*.json)
+  tags   = module.all_label.tags
 }
 
 resource "aws_iam_role_policy_attachment" "all" {
