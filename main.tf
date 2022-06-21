@@ -23,6 +23,9 @@ resource "datadog_integration_aws" "integration" {
   host_tags                        = var.host_tags
   excluded_regions                 = var.excluded_regions
   account_specific_namespace_rules = var.account_specific_namespace_rules
+  cspm_resource_collection_enabled = var.cspm_resource_collection_enabled
+  metrics_collection_enabled       = var.metrics_collection_enabled
+  resource_collection_enabled      = var.resource_collection_enabled
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -63,7 +66,7 @@ resource "aws_iam_role" "default" {
 
 # https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#resource-collection
 resource "aws_iam_role_policy_attachment" "security_audit" {
-  count      = local.enabled && var.security_audit_policy_enabled ? 1 : 0
+  count      = local.enabled && (datadog_integration_aws.integration[0].cspm_resource_collection_enabled || var.security_audit_policy_enabled) ? 1 : 0
   role       = join("", aws_iam_role.default.*.name)
   policy_arn = format("arn:%s:iam::aws:policy/SecurityAudit", local.aws_partition)
 }
