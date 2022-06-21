@@ -41,18 +41,18 @@ variable "security_audit_policy_enabled" {
 
 variable "cspm_resource_collection_enabled" {
   type        = bool
-  default     = false
+  default     = null
   description = "Whether Datadog collects cloud security posture management resources from your AWS account."
 }
 
 variable "metrics_collection_enabled" {
   type        = bool
-  default     = false
+  default     = null
   description = "Whether Datadog collects metrics for this AWS account."
 }
 
 variable "resource_collection_enabled" {
   type        = bool
-  default     = false
+  default     = null
   description = "Whether Datadog collects a standard set of resources from your AWS account."
 }
