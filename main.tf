@@ -66,7 +66,7 @@ resource "aws_iam_role" "default" {
 
 # https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#resource-collection
 resource "aws_iam_role_policy_attachment" "security_audit" {
-  count      = local.enabled && ((var.cspm_resource_collection_enabled != null && var.cspm_resource_collection_enabled) || var.security_audit_policy_enabled) ? 1 : 0
+  count      = local.enabled && ((var.cspm_resource_collection_enabled != null ? var.cspm_resource_collection_enabled : false) || var.security_audit_policy_enabled) ? 1 : 0
   role       = join("", aws_iam_role.default.*.name)
   policy_arn = format("arn:%s:iam::aws:policy/SecurityAudit", local.aws_partition)
 }
