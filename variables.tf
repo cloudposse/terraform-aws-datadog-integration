@@ -36,5 +36,23 @@ variable "account_specific_namespace_rules" {
 variable "security_audit_policy_enabled" {
   type        = bool
   default     = false
-  description = "Enable/disable attaching the AWS managed `SecurityAudit` policy to the Datadog IAM role to collect information about how AWS resources are configured (used in Datadog Cloud Security Posture Management to read security configuration metadata)"
+  description = "Enable/disable attaching the AWS managed `SecurityAudit` policy to the Datadog IAM role to collect information about how AWS resources are configured (used in Datadog Cloud Security Posture Management to read security configuration metadata). If var.cspm_resource_collection_enabled, this is enabled automatically."
+}
+
+variable "cspm_resource_collection_enabled" {
+  type        = bool
+  default     = null
+  description = "Whether Datadog collects cloud security posture management resources from your AWS account."
+}
+
+variable "metrics_collection_enabled" {
+  type        = bool
+  default     = null
+  description = "Whether Datadog collects metrics for this AWS account."
+}
+
+variable "resource_collection_enabled" {
+  type        = bool
+  default     = null
+  description = "Whether Datadog collects a standard set of resources from your AWS account."
 }
