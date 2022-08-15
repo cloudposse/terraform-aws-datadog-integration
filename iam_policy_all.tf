@@ -65,6 +65,7 @@ data "aws_iam_policy_document" "all" {
       "redshift:DescribeClusters",
       "redshift:DescribeLoggingStatus",
       "route53:List*",
+      "s3:GetAccountPublicAccessBlock",
       "s3:GetBucketLogging",
       "s3:GetBucketLocation",
       "s3:GetBucketNotification",
