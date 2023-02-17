@@ -91,6 +91,10 @@ data "aws_iam_policy_document" "all" {
       "tag:GetResources",
       "tag:GetTagKeys",
       "tag:GetTagValues",
+      "waf:Get*",
+      "waf:List*",
+      "wafv2:Get*",
+      "wafv2:List*",
       "xray:BatchGetTraces",
       "xray:GetTraceSummaries"
     ]
