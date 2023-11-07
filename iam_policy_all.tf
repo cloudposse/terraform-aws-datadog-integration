@@ -26,6 +26,8 @@ data "aws_iam_policy_document" "all" {
       "dynamodb:List*",
       "dynamodb:Describe*",
       "ec2:Describe*",
+      "ec2:GetTransitGatewayPrefixListReferences",
+      "ec2:SearchTransitGatewayRoutes",
       "ecs:Describe*",
       "ecs:List*",
       "elasticache:Describe*",
