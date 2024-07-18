@@ -5,3 +5,4 @@ repository:
   description: Terraform module to configure Datadog AWS integration
   homepage: https://cloudposse.com/accelerate
   topics: terratest, datadog, terraform-modules, hcl2, aws
+
