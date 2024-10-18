@@ -25,6 +25,7 @@ resource "datadog_integration_aws" "integration" {
   account_specific_namespace_rules     = var.account_specific_namespace_rules
   cspm_resource_collection_enabled     = var.cspm_resource_collection_enabled
   metrics_collection_enabled           = var.metrics_collection_enabled
+  resource_collection_enabled          = var.resource_collection_enabled
   extended_resource_collection_enabled = var.extended_resource_collection_enabled
 }
 

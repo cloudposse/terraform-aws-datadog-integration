@@ -51,6 +51,16 @@ variable "metrics_collection_enabled" {
   description = "Whether Datadog collects metrics for this AWS account."
 }
 
+variable "resource_collection_enabled" {
+  type        = bool
+  default     = null
+  description = <<-EOT
+   DEPRECATED: Use `extended_resource_collection_enabled` instead.
+   Historical description: Whether Datadog collects a standard set of resources from your AWS account.
+   Historical default: `null`
+   EOT
+}
+
 variable "extended_resource_collection_enabled" {
   type        = bool
   default     = null
