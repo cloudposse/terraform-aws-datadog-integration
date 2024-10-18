@@ -43,3 +43,10 @@ variable "security_audit_policy_enabled" {
   default     = false
   description = "Enable/disable attaching the AWS managed `SecurityAudit` policy to the Datadog IAM role to collect information about how AWS resources are configured (used in Datadog Cloud Security Posture Management to read security configuration metadata)"
 }
+
+variable "extended_resource_collection_enabled" {
+  type        = bool
+  default     = null
+  description = "Whether Datadog collects additional attributes and configuration information about the resources in your AWS account. Required for `cspm_resource_collection_enabled`"
+}
+
