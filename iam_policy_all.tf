@@ -1,5 +1,6 @@
 # https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#datadog-aws-iam-policy
 
+# AWS Integration IAM Policy
 data "aws_iam_policy_document" "all" {
   count = local.enabled ? 1 : 0
 
@@ -20,11 +21,11 @@ data "aws_iam_policy_document" "all" {
       "cloudwatch:Describe*",
       "cloudwatch:Get*",
       "cloudwatch:List*",
-      "codedeploy:List*",
       "codedeploy:BatchGet*",
+      "codedeploy:List*",
       "directconnect:Describe*",
-      "dynamodb:List*",
       "dynamodb:Describe*",
+      "dynamodb:List*",
       "ec2:Describe*",
       "ec2:GetTransitGatewayPrefixListReferences",
       "ec2:SearchTransitGatewayRoutes",
@@ -32,27 +33,23 @@ data "aws_iam_policy_document" "all" {
       "ecs:List*",
       "elasticache:Describe*",
       "elasticache:List*",
+      "elasticfilesystem:DescribeAccessPoints",
       "elasticfilesystem:DescribeFileSystems",
       "elasticfilesystem:DescribeTags",
-      "elasticfilesystem:DescribeAccessPoints",
       "elasticloadbalancing:Describe*",
-      "elasticmapreduce:List*",
       "elasticmapreduce:Describe*",
-      "es:ListTags",
-      "es:ListDomainNames",
+      "elasticmapreduce:List*",
       "es:DescribeElasticsearchDomains",
+      "es:ListDomainNames",
+      "es:ListTags",
       "events:CreateEventBus",
       "fsx:DescribeFileSystems",
       "fsx:ListTagsForResource",
-      "health:DescribeEvents",
-      "health:DescribeEventDetails",
       "health:DescribeAffectedEntities",
-      "iam:GetAccountPasswordPolicy",
-      "iam:GetLoginProfile",
-      "iam:ListAttachedRolePolicies",
-      "kinesis:List*",
+      "health:DescribeEventDetails",
+      "health:DescribeEvents",
       "kinesis:Describe*",
-      "kms:GetKeyRotationStatus",
+      "kinesis:List*",
       "lambda:GetPolicy",
       "lambda:List*",
       "logs:DeleteSubscriptionFilter",
@@ -62,6 +59,8 @@ data "aws_iam_policy_document" "all" {
       "logs:FilterLogEvents",
       "logs:PutSubscriptionFilter",
       "logs:TestMetricFilter",
+      "oam:ListAttachedLinks",
+      "oam:ListSinks",
       "organizations:Describe*",
       "organizations:List*",
       "rds:Describe*",
@@ -69,30 +68,26 @@ data "aws_iam_policy_document" "all" {
       "redshift:DescribeClusters",
       "redshift:DescribeLoggingStatus",
       "route53:List*",
-      "s3:GetAccountPublicAccessBlock",
-      "s3:GetBucketAcl",
-      "s3:GetBucketEncryption",
-      "s3:GetBucketLogging",
       "s3:GetBucketLocation",
+      "s3:GetBucketLogging",
       "s3:GetBucketNotification",
-      "s3:GetBucketPolicyStatus",
       "s3:GetBucketTagging",
-      "s3:GetBucketWebsite",
-      "s3:GetBucketVersioning",
       "s3:ListAllMyBuckets",
       "s3:PutBucketNotification",
       "ses:Get*",
-      "sns:GetTopicAttributes",
+      "sns:GetSubscriptionAttributes",
       "sns:List*",
       "sns:Publish",
       "sqs:ListQueues",
-      "states:ListStateMachines",
       "states:DescribeStateMachine",
+      "states:ListStateMachines",
       "support:DescribeTrustedAdvisor*",
       "support:RefreshTrustedAdvisorCheck",
       "tag:GetResources",
       "tag:GetTagKeys",
       "tag:GetTagValues",
+      "wafv2:GetLoggingConfiguration",
+      "wafv2:ListLoggingConfigurations",
       "xray:BatchGetTraces",
       "xray:GetTraceSummaries"
     ]
@@ -111,18 +106,84 @@ module "all_label" {
 }
 
 locals {
-  all_count = local.enabled && contains(split(",", lower(join(",", var.integrations))), "all") ? 1 : 0
+  enabled       = var.enabled
+  integrations  = split(",", lower(join(",", var.integrations)))
+  all_count     = local.enabled && contains(local.integrations, "all") ? 1 : 0
+  resource_collection_count = local.enabled && contains(local.integrations, "resource_collection") ? 1 : 0
 }
 
 resource "aws_iam_policy" "all" {
   count  = local.all_count
   name   = module.all_label.id
-  policy = join("", data.aws_iam_policy_document.all.*.json)
+  policy = data.aws_iam_policy_document.all[0].json
   tags   = module.all_label.tags
 }
 
 resource "aws_iam_role_policy_attachment" "all" {
   count      = local.all_count
-  role       = join("", aws_iam_role.default.*.name)
-  policy_arn = join("", aws_iam_policy.all.*.arn)
+  role       = aws_iam_role.default[0].name
+  policy_arn = aws_iam_policy.all[0].arn
+}
+
+# AWS Resource Collection IAM Policy
+data "aws_iam_policy_document" "resource_collection" {
+  count = local.enabled ? 1 : 0
+
+  statement {
+    sid    = "DatadogResourceCollection"
+    effect = "Allow"
+
+    actions = [
+      "backup:ListRecoveryPointsByBackupVault",
+      "bcm-data-exports:GetExport",
+      "bcm-data-exports:ListExports",
+      "cassandra:Select",
+      "cur:DescribeReportDefinitions",
+      "ec2:GetSnapshotBlockPublicAccessState",
+      "glacier:GetVaultNotifications",
+      "glue:ListRegistries",
+      "lightsail:GetInstancePortStates",
+      "savingsplans:DescribeSavingsPlanRates",
+      "savingsplans:DescribeSavingsPlans",
+      "timestream:DescribeEndpoints",
+      "waf-regional:ListRuleGroups",
+      "waf-regional:ListRules",
+      "waf:ListRuleGroups",
+      "waf:ListRules",
+      "wafv2:GetIPSet",
+      "wafv2:GetRegexPatternSet",
+      "wafv2:GetRuleGroup"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+module "resource_collection_label" {
+  source  = "cloudposse/label/null"
+  version = "0.25.0"
+
+  attributes = compact(concat(module.this.attributes, ["resource_collection"]))
+
+  context = module.this.context
+}
+
+resource "aws_iam_policy" "resource_collection" {
+  count  = local.resource_collection_count
+  name   = module.resource_collection_label.id
+  policy = data.aws_iam_policy_document.resource_collection[0].json
+  tags   = module.resource_collection_label.tags
+}
+
+resource "aws_iam_role_policy_attachment" "resource_collection" {
+  count      = local.resource_collection_count
+  role       = aws_iam_role.default[0].name
+  policy_arn = aws_iam_policy.resource_collection[0].arn
+}
+
+# Attach AWS Managed SecurityAudit Policy for Resource Collection
+resource "aws_iam_role_policy_attachment" "security_audit" {
+  count      = local.resource_collection_count
+  role       = aws_iam_role.default[0].name
+  policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
