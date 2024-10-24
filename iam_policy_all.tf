@@ -115,14 +115,14 @@ locals {
 resource "aws_iam_policy" "all" {
   count  = local.all_count
   name   = module.all_label.id
-  policy = data.aws_iam_policy_document.all[0].json
+  policy = join("", data.aws_iam_policy_document.all.*.json)
   tags   = module.all_label.tags
 }
 
 resource "aws_iam_role_policy_attachment" "all" {
   count      = local.all_count
-  role       = aws_iam_role.default[0].name
-  policy_arn = aws_iam_policy.all[0].arn
+  role       = join("", aws_iam_role.default.*.name)
+  policy_arn = join("", aws_iam_policy.all.*.arn)
 }
 
 # AWS Resource Collection IAM Policy
