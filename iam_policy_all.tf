@@ -106,7 +106,6 @@ module "all_label" {
 }
 
 locals {
-  enabled       = var.enabled
   integrations  = split(",", lower(join(",", var.integrations)))
   all_count     = local.enabled && contains(local.integrations, "all") ? 1 : 0
   resource_collection_count = local.enabled && contains(local.integrations, "resource_collection") ? 1 : 0
@@ -179,11 +178,4 @@ resource "aws_iam_role_policy_attachment" "resource_collection" {
   count      = local.resource_collection_count
   role       = aws_iam_role.default[0].name
   policy_arn = aws_iam_policy.resource_collection[0].arn
-}
-
-# Attach AWS Managed SecurityAudit Policy for Resource Collection
-resource "aws_iam_role_policy_attachment" "security_audit" {
-  count      = local.resource_collection_count
-  role       = aws_iam_role.default[0].name
-  policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
