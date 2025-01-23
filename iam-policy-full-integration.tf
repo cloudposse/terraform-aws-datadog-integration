@@ -106,7 +106,11 @@ module "full_integration_label" {
 }
 
 locals {
-  full_integration_count = local.enabled && contains(split(",", lower(join(",", local.policies))), "full_integration") ? 1 : 0
+  full_integration_count = local.enabled && (
+    contains(split(",", lower(join(",", local.policies))), "full-integration") ||
+    # Backwards compatibility for the integrations variable
+    contains(split(",", lower(join(",", local.policies))), "all")
+  ) ? 1 : 0
 }
 
 resource "aws_iam_policy" "full_integration" {

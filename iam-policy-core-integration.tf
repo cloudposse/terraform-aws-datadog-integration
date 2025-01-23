@@ -30,7 +30,11 @@ module "core_label" {
 }
 
 locals {
-  core_count = local.enabled && contains(split(",", lower(join(",", local.policies))), "core-integration") ? 1 : 0
+  core_count = local.enabled && (
+    contains(split(",", lower(join(",", local.policies))), "core-integration") ||
+    # Backwards compatibility for integrations variable
+    contains(split(",", lower(join(",", local.policies))), "core")
+  ) ? 1 : 0
 }
 
 resource "aws_iam_policy" "core" {

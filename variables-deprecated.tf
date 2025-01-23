@@ -8,4 +8,3 @@ variable "integrations" {
   default     = null
 }
 
-
