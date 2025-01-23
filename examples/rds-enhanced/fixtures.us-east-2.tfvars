@@ -8,4 +8,4 @@ stage = "test"
 
 name = "datadog-integration"
 
-integrations = ["all"]
+policies = ["full-integration"]

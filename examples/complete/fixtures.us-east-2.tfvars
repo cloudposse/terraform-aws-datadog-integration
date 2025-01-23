@@ -8,6 +8,5 @@ stage = "test"
 
 name = "datadog-integration"
 
-integrations = ["all"]
+policies = ["full-integration"]
 
-security_audit_policy_enabled = true
