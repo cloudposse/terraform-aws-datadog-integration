@@ -3,7 +3,10 @@ locals {
   aws_account_id      = join("", data.aws_caller_identity.current[*].account_id)
   aws_partition       = join("", data.aws_partition.current[*].partition)
   datadog_external_id = join("", datadog_integration_aws.integration[*].external_id)
-  policies            = distinct(concat(var.integrations, var.policies))
+  policies = distinct(concat(
+    var.integrations != null ? var.integrations : [],
+    var.policies
+  ))
 }
 
 data "aws_partition" "current" {
