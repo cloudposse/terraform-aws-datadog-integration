@@ -4,12 +4,12 @@ output "aws_account_id" {
 }
 
 output "aws_role_name" {
-  value       = join("", aws_iam_role.default.*.name)
+  value       = join("", aws_iam_role.default[*].name)
   description = "Name of the AWS IAM Role for Datadog to use for this integration"
 }
 
 output "aws_role_arn" {
-  value       = join("", aws_iam_role.default.*.arn)
+  value       = join("", aws_iam_role.default[*].arn)
   description = "ARN of the AWS IAM Role for Datadog to use for this integration"
 }
 

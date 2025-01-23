@@ -1,8 +1,9 @@
 locals {
   enabled             = module.this.enabled
-  aws_account_id      = join("", data.aws_caller_identity.current.*.account_id)
-  aws_partition       = join("", data.aws_partition.current.*.partition)
-  datadog_external_id = join("", datadog_integration_aws.integration.*.external_id)
+  aws_account_id      = join("", data.aws_caller_identity.current[*].account_id)
+  aws_partition       = join("", data.aws_partition.current[*].partition)
+  datadog_external_id = join("", datadog_integration_aws.integration[*].external_id)
+  policies            = distinct(merge(var.integrations, var.policies))
 }
 
 data "aws_partition" "current" {
@@ -60,13 +61,13 @@ data "aws_iam_policy_document" "assume_role" {
 resource "aws_iam_role" "default" {
   count              = local.enabled ? 1 : 0
   name               = module.this.id
-  assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
+  assume_role_policy = join("", data.aws_iam_policy_document.assume_role[*].json)
   tags               = module.this.tags
 }
 
 # https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#resource-collection
 resource "aws_iam_role_policy_attachment" "security_audit" {
   count      = local.enabled && ((var.cspm_resource_collection_enabled != null ? var.cspm_resource_collection_enabled : false) || var.security_audit_policy_enabled) ? 1 : 0
-  role       = join("", aws_iam_role.default.*.name)
+  role       = join("", aws_iam_role.default[*].name)
   policy_arn = format("arn:%s:iam::aws:policy/SecurityAudit", local.aws_partition)
 }
