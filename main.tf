@@ -3,7 +3,7 @@ locals {
   aws_account_id      = join("", data.aws_caller_identity.current[*].account_id)
   aws_partition       = join("", data.aws_partition.current[*].partition)
   datadog_external_id = join("", datadog_integration_aws.integration[*].external_id)
-  policies            = distinct(merge(var.integrations, var.policies))
+  policies            = distinct(concat(var.integrations, var.policies))
 }
 
 data "aws_partition" "current" {
@@ -17,16 +17,17 @@ data "aws_caller_identity" "current" {
 # https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/integration_aws
 # https://docs.datadoghq.com/api/v1/aws-integration/
 resource "datadog_integration_aws" "integration" {
-  count                            = local.enabled ? 1 : 0
-  account_id                       = local.aws_account_id
-  role_name                        = module.this.id
-  filter_tags                      = var.filter_tags
-  host_tags                        = var.host_tags
-  excluded_regions                 = var.excluded_regions
-  account_specific_namespace_rules = var.account_specific_namespace_rules
-  cspm_resource_collection_enabled = var.cspm_resource_collection_enabled
-  metrics_collection_enabled       = var.metrics_collection_enabled
-  resource_collection_enabled      = var.resource_collection_enabled
+  count                                = local.enabled ? 1 : 0
+  account_id                           = local.aws_account_id
+  role_name                            = module.this.id
+  filter_tags                          = var.filter_tags
+  host_tags                            = var.host_tags
+  excluded_regions                     = var.excluded_regions
+  account_specific_namespace_rules     = var.account_specific_namespace_rules
+  cspm_resource_collection_enabled     = var.cspm_resource_collection_enabled
+  metrics_collection_enabled           = var.metrics_collection_enabled
+  resource_collection_enabled          = var.resource_collection_enabled
+  extended_resource_collection_enabled = var.extended_resource_collection_enabled
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -65,9 +66,3 @@ resource "aws_iam_role" "default" {
   tags               = module.this.tags
 }
 
-# https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#resource-collection
-resource "aws_iam_role_policy_attachment" "security_audit" {
-  count      = local.enabled && ((var.cspm_resource_collection_enabled != null ? var.cspm_resource_collection_enabled : false) || var.security_audit_policy_enabled) ? 1 : 0
-  role       = join("", aws_iam_role.default[*].name)
-  policy_arn = format("arn:%s:iam::aws:policy/SecurityAudit", local.aws_partition)
-}

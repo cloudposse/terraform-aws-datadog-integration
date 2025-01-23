@@ -6,7 +6,6 @@
 
 # Name of this project
 name: terraform-aws-datadog-integration
-
 # Tags of this project
 tags:
   - aws
@@ -15,22 +14,17 @@ tags:
   - logging
   - monitoring
   - datadog
-
 # Categories of this project
 categories:
   - terraform-modules/logging
-
 # Logo for this project
 #logo: docs/logo.png
 
 # License of this project
 license: "APACHE2"
-
 # Canonical GitHub repo
 github_repo: cloudposse/terraform-aws-datadog-integration
-
 # Badges to display
-
 badges:
   - name: Latest Release
     image: https://img.shields.io/github/release/cloudposse/terraform-aws-datadog-integration.svg?style=for-the-badge
@@ -41,7 +35,6 @@ badges:
   - name: Slack Community
     image: https://slack.cloudposse.com/for-the-badge.svg
     url: https://slack.cloudposse.com
-
 # List any related terraform modules that this module may be used with or that this module depends on.
 related:
   - name: "fluentd-datadog-logs"
@@ -53,14 +46,11 @@ related:
   - name: "terraform-aws-datadog-lambda-forwarder"
     description: "Terraform module to provision all the necessary infrastructure to deploy [Datadog Lambda forwarders](https://github.com/DataDog/datadog-serverless-functions/tree/master/aws/logs_monitoring)"
     url: "https://github.com/cloudposse/terraform-aws-datadog-lambda-forwarder"
-
 # Short description of this project
 description: |-
   Terraform module to configure [Datadog AWS integration](https://docs.datadoghq.com/api/v1/aws-integration/).
-
 # How to use this project
-usage: |2-
-
+usage: |-
   For a complete example, see [examples/complete](examples/complete).
 
   For automated tests of the complete example using [bats](https://github.com/bats-core/bats-core) and [Terratest](https://github.com/gruntwork-io/terratest) (which tests and deploys the example on AWS), see [test](test).
@@ -69,14 +59,9 @@ usage: |2-
 
   ### Structure
 
-  This module follows [Datadog's documentation](https://docs.datadoghq.com/integrations/amazon_web_services/)
-  by supporting a `core` integration which is the minimum set of permissions needed for any Datadog integration,
-  plus an additional integration per service which contains the additional permissions Datadog has documented
-  are required for that service.
+  This module aligns with [Datadog's documentation](https://docs.datadoghq.com/integrations/amazon_web_services/) by providing a `core-integration` policy for minimal permissions and additional policies for specific services. It also includes a `full-integration` policy (formerly `all`), encompassing all permissions listed under "All Permissions" for comprehensive coverage. The variable `var.integrations` is deprecated and replaced by `var.policies`, which supports Datadog-defined IAM policy names such as `core-integration`, `full-integration`, `resource-collection`, `CSMP`, `SecurityAudit`, and `everything`.
 
-  To make things easier, this module also implements an `all` integration which includes all the permissions Datadog
-  lists under "All Permissions" as the maximal set of permissions required, so you can just set
-  `integrations = ["all"]` and be done.
+  Policy files have been updated for clarity and functionality. The `full-integration` policy reflects Datadog’s latest permissions and replaces the former `all` policy. A new `resource-collection` policy has been added for resource-specific permissions, while the `SecurityAudit` policy attaches the AWS-managed role for compliance. Backward compatibility is maintained by mapping old `var.integrations` values to new `var.policies`, ensuring a seamless transition while supporting legacy configurations.```
 
   ### Installation
 
@@ -91,18 +76,15 @@ usage: |2-
     namespace                  = "eg"
     stage                      = "test"
     name                       = "datadog"
-    integrations               = ["all"]
+    policies                   = ["full-integration"]
   }
   ```
 
   The DataDog integration will be linked with your configured datadog account via the provider's `api_key`.
-
 examples: |-
   Review the [complete example](examples/complete) to see how to use this module.
-
 include:
   - "docs/targets.md"
   - "docs/terraform.md"
-
 # Contributors to this project
 contributors: []

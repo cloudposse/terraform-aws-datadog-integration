@@ -27,6 +27,7 @@ variable "policies" {
     ])
     error_message = "Invalid policy. Valid options are: core-integration, full-integration, resource-collection, CSMP, SecurityAudit, everything."
   }
+  default = []
 }
 
 variable "filter_tags" {
@@ -53,12 +54,6 @@ variable "account_specific_namespace_rules" {
   description = "An object, (in the form {\"namespace1\":true/false, \"namespace2\":true/false} ), that enables or disables metric collection for specific AWS namespaces for this AWS account only"
 }
 
-variable "security_audit_policy_enabled" {
-  type        = bool
-  default     = false
-  description = "Enable/disable attaching the AWS managed `SecurityAudit` policy to the Datadog IAM role to collect information about how AWS resources are configured (used in Datadog Cloud Security Posture Management to read security configuration metadata). If var.cspm_resource_collection_enabled, this is enabled automatically."
-}
-
 variable "cspm_resource_collection_enabled" {
   type        = bool
   default     = null
@@ -71,8 +66,8 @@ variable "metrics_collection_enabled" {
   description = "Whether Datadog collects metrics for this AWS account."
 }
 
-variable "resource_collection_enabled" {
+variable "extended_resource_collection_enabled" {
   type        = bool
+  description = "Whether Datadog collects additional attributes and configuration information about the resources in your AWS account. Required for `cspm_resource_collection_enabled`."
   default     = null
-  description = "Whether Datadog collects a standard set of resources from your AWS account."
 }

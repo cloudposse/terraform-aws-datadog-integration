@@ -109,7 +109,8 @@ locals {
   full_integration_count = local.enabled && (
     contains(split(",", lower(join(",", local.policies))), "full-integration") ||
     # Backwards compatibility for the integrations variable
-    contains(split(",", lower(join(",", local.policies))), "all")
+    contains(split(",", lower(join(",", local.policies))), "all") ||
+    contains(split(",", lower(join(",", local.policies))), "everything")
   ) ? 1 : 0
 }
 
@@ -123,5 +124,5 @@ resource "aws_iam_policy" "full_integration" {
 resource "aws_iam_role_policy_attachment" "full_integration" {
   count      = local.full_integration_count
   role       = join("", aws_iam_role.default[*].name)
-  policy_arn = join("", aws_iam_policy.all[*].arn)
+  policy_arn = join("", aws_iam_policy.full_integration[*].arn)
 }
