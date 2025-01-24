@@ -13,8 +13,8 @@ variable "policies" {
   type        = list(string)
   description = <<-EOT
     List of Datadog's names for AWS IAM policies names to apply to the role.
-    Valid options are "core-integration", "full-integration", "resource-collection", "CSMP", "SecurityAudit", "everything".
-    "CSMP" is for Cloud Security Posture Management, which also requires "full-integration".
+    Valid options are "core-integration", "full-integration", "resource-collection", "CSPM", "SecurityAudit", "everything".
+    "CSPM" is for Cloud Security Posture Management, which also requires "full-integration".
     "SecurityAudit" is for the AWS-managed `SecurityAudit` Policy.
     "everything" means all permissions for offerings.
     EOT
@@ -25,12 +25,12 @@ variable "policies" {
         "core-integration",
         "full-integration",
         "resource-collection",
-        "CSMP",
+        "CSPM",
         "SecurityAudit",
         "everything"
       ], policy)
     ])
-    error_message = "Invalid policy. Valid options are: core-integration, full-integration, resource-collection, CSMP, SecurityAudit, everything."
+    error_message = "Invalid policy. Valid options are: core-integration, full-integration, resource-collection, CSPM, SecurityAudit, everything."
   }
   default = []
 }
