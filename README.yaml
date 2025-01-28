@@ -63,6 +63,10 @@ usage: |-
 
   Policy files have been updated for clarity and functionality. The `full-integration` policy reflects Datadog’s latest permissions and replaces the former `all` policy. A new `resource-collection` policy has been added for resource-specific permissions, while the `SecurityAudit` policy attaches the AWS-managed role for compliance. Backward compatibility is maintained by mapping old `var.integrations` values to new `var.policies`, ensuring a seamless transition while supporting legacy configurations.```
 
+  ### Migration Guide
+
+  To migrate from the `v1.3.0` configuration, replace `var.integrations` with `var.policies` in your module usage. The values `"core"` and `"all"` previously used in `var.integrations` should be updated to `"core-integration"` and `"full-integration"`, respectively. If you were using `"CSPM"`, it now serves as an alias for `"SecurityAudit"`. Existing configurations will remain functional due to backward compatibility mappings, but updating to the new `var.policies` variable ensures alignment with the latest module structure and Datadog's documentation.
+
   ### Installation
 
   Include this module in your existing terraform code:

@@ -59,6 +59,10 @@ This module aligns with [Datadog's documentation](https://docs.datadoghq.com/int
 
 Policy files have been updated for clarity and functionality. The `full-integration` policy reflects Datadog’s latest permissions and replaces the former `all` policy. A new `resource-collection` policy has been added for resource-specific permissions, while the `SecurityAudit` policy attaches the AWS-managed role for compliance. Backward compatibility is maintained by mapping old `var.integrations` values to new `var.policies`, ensuring a seamless transition while supporting legacy configurations.```
 
+### Migration Guide
+
+To migrate from the `v1.3.0` configuration, replace `var.integrations` with `var.policies` in your module usage. The values `"core"` and `"all"` previously used in `var.integrations` should be updated to `"core-integration"` and `"full-integration"`, respectively. If you were using `"CSPM"`, it now serves as an alias for `"SecurityAudit"`. Existing configurations will remain functional due to backward compatibility mappings, but updating to the new `var.policies` variable ensures alignment with the latest module structure and Datadog's documentation.
+
 ### Installation
 
 Include this module in your existing terraform code:
@@ -182,6 +186,7 @@ Available targets:
 | <a name="input_policies"></a> [policies](#input\_policies) | List of Datadog's names for AWS IAM policies names to apply to the role.<br/>Valid options are "core-integration", "full-integration", "resource-collection", "CSPM", "SecurityAudit", "everything".<br/>"CSPM" is for Cloud Security Posture Management, which also requires "full-integration".<br/>"SecurityAudit" is for the AWS-managed `SecurityAudit` Policy.<br/>"everything" means all permissions for offerings. | `list(string)` | `[]` | no |
 | <a name="input_regex_replace_chars"></a> [regex\_replace\_chars](#input\_regex\_replace\_chars) | Terraform regular expression (regex) string.<br/>Characters matching the regex will be removed from the ID elements.<br/>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
 | <a name="input_resource_collection_enabled"></a> [resource\_collection\_enabled](#input\_resource\_collection\_enabled) | DEPRECATED: Use the `extended_resource_collection_enabled` variables instead.<br/>Whether Datadog collects a standard set of resources from your AWS account. | `bool` | `null` | no |
+| <a name="input_security_audit_policy_enabled"></a> [security\_audit\_policy\_enabled](#input\_security\_audit\_policy\_enabled) | DEPRECATED: Include `SecurityAudit` in the `policies` variable instead.<br/>Enable/disable attaching the AWS managed `SecurityAudit` policy to the Datadog IAM role to collect information about how AWS resources are configured (used in Datadog Cloud Security Posture Management to read security configuration metadata). If var.cspm\_resource\_collection\_enabled, this is enabled automatically." | `bool` | `null` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br/>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
