@@ -1,10 +1,11 @@
-# https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#datadog-aws-iam-policy
+# https://docs.datadoghq.com/integrations/amazon_web_services/?tab=roledelegation#aws-integration-iam-policy
+# https://datadog-cloudformation-template.s3.amazonaws.com/aws/datadog_integration_role.yaml
 
-data "aws_iam_policy_document" "all" {
+data "aws_iam_policy_document" "full_integration" {
   count = local.enabled ? 1 : 0
 
   statement {
-    sid    = "DatadogAll"
+    sid    = "DatadogFullIntegration"
     effect = "Allow"
 
     actions = [
@@ -47,12 +48,8 @@ data "aws_iam_policy_document" "all" {
       "health:DescribeEvents",
       "health:DescribeEventDetails",
       "health:DescribeAffectedEntities",
-      "iam:GetAccountPasswordPolicy",
-      "iam:GetLoginProfile",
-      "iam:ListAttachedRolePolicies",
       "kinesis:List*",
       "kinesis:Describe*",
-      "kms:GetKeyRotationStatus",
       "lambda:GetPolicy",
       "lambda:List*",
       "logs:DeleteSubscriptionFilter",
@@ -62,6 +59,8 @@ data "aws_iam_policy_document" "all" {
       "logs:FilterLogEvents",
       "logs:PutSubscriptionFilter",
       "logs:TestMetricFilter",
+      "oam:ListSinks",
+      "oam:ListAttachedLinks",
       "organizations:Describe*",
       "organizations:List*",
       "rds:Describe*",
@@ -69,22 +68,16 @@ data "aws_iam_policy_document" "all" {
       "redshift:DescribeClusters",
       "redshift:DescribeLoggingStatus",
       "route53:List*",
-      "s3:GetAccountPublicAccessBlock",
-      "s3:GetBucketAcl",
-      "s3:GetBucketEncryption",
       "s3:GetBucketLogging",
       "s3:GetBucketLocation",
       "s3:GetBucketNotification",
-      "s3:GetBucketPolicyStatus",
       "s3:GetBucketTagging",
-      "s3:GetBucketWebsite",
-      "s3:GetBucketVersioning",
       "s3:ListAllMyBuckets",
       "s3:PutBucketNotification",
       "ses:Get*",
-      "sns:GetTopicAttributes",
       "sns:List*",
       "sns:Publish",
+      "sns:GetSubscriptionAttributes",
       "sqs:ListQueues",
       "states:ListStateMachines",
       "states:DescribeStateMachine",
@@ -93,6 +86,8 @@ data "aws_iam_policy_document" "all" {
       "tag:GetResources",
       "tag:GetTagKeys",
       "tag:GetTagValues",
+      "wafv2:ListLoggingConfigurations",
+      "wafv2:GetLoggingConfiguration",
       "xray:BatchGetTraces",
       "xray:GetTraceSummaries"
     ]
@@ -101,28 +96,33 @@ data "aws_iam_policy_document" "all" {
   }
 }
 
-module "all_label" {
+module "full_integration_label" {
   source  = "cloudposse/label/null"
   version = "0.25.0"
 
-  attributes = compact(concat(module.this.attributes, ["all"]))
+  attributes = compact(concat(module.this.attributes, ["full_integration"]))
 
   context = module.this.context
 }
 
 locals {
-  all_count = local.enabled && contains(split(",", lower(join(",", var.integrations))), "all") ? 1 : 0
+  full_integration_count = local.enabled && (
+    contains(split(",", lower(join(",", local.policies))), "full-integration") ||
+    # Backwards compatibility for the integrations variable
+    contains(split(",", lower(join(",", local.policies))), "all") ||
+    contains(split(",", lower(join(",", local.policies))), "everything")
+  ) ? 1 : 0
 }
 
-resource "aws_iam_policy" "all" {
-  count  = local.all_count
-  name   = module.all_label.id
-  policy = join("", data.aws_iam_policy_document.all.*.json)
-  tags   = module.all_label.tags
+resource "aws_iam_policy" "full_integration" {
+  count  = local.full_integration_count
+  name   = module.full_integration_label.id
+  policy = join("", data.aws_iam_policy_document.full_integration[*].json)
+  tags   = module.full_integration_label.tags
 }
 
-resource "aws_iam_role_policy_attachment" "all" {
-  count      = local.all_count
-  role       = join("", aws_iam_role.default.*.name)
-  policy_arn = join("", aws_iam_policy.all.*.arn)
+resource "aws_iam_role_policy_attachment" "full_integration" {
+  count      = local.full_integration_count
+  role       = join("", aws_iam_role.default[*].name)
+  policy_arn = join("", aws_iam_policy.full_integration[*].arn)
 }

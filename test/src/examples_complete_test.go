@@ -3,6 +3,7 @@ package test
 import (
 	"math/rand"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -39,5 +40,5 @@ func TestExamplesComplete(t *testing.T) {
 	// Run `terraform output` to get the value of an output variable
 	awsRoleName := terraform.Output(t, terraformOptions, "aws_role_name")
 	// Verify we're getting back the outputs we expect
-	assert.Equal(t, "eg-test-datadog-integration-"+randId, awsRoleName)
+	assert.Equal(t, "eg-test-datadog-integration-"+randId, strings.Trim(awsRoleName, "\""))
 }
