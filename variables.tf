@@ -123,3 +123,10 @@ variable "role_permissions_boundary" {
   default     = null
 
 }
+
+variable "policy_path" {
+  type        = string
+  description = "The path to the IAM policy"
+  default     = "/"
+  
+}
