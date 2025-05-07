@@ -2,7 +2,7 @@ locals {
   enabled             = module.this.enabled
   aws_account_id      = join("", data.aws_caller_identity.current[*].account_id)
   aws_partition       = join("", data.aws_partition.current[*].partition)
-  datadog_external_id = join("", datadog_integration_aws_external_id.default[*].id)
+  datadog_external_id = join("", data.datadog_integration_aws_external_id.default[*].id)
   policies = distinct(concat(
     var.integrations != null ? var.integrations : [],
     var.policies
@@ -33,7 +33,10 @@ resource "datadog_integration_aws_account" "integration" {
   }
   auth_config {
     aws_auth_config_role {
-      role_name = module.this.id
+      # If role path is set to "/", the role name will be the same as the module name
+      # If role path is set to something else, the role name will be the path + module name
+      role_name   = (var.role_path == "/") ? module.this.id : "${var.role_path}${module.this.id}"
+      external_id = local.datadog_external_id
     }
   }
   logs_config {

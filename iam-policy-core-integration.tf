@@ -41,6 +41,7 @@ resource "aws_iam_policy" "core" {
   count  = local.core_count
   name   = module.core_label.id
   policy = join("", data.aws_iam_policy_document.core[*].json)
+  path   = var.policy_path
   tags   = module.core_label.tags
 }
 
