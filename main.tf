@@ -61,10 +61,10 @@ resource "datadog_integration_aws_account" "integration" {
   dynamic "metrics_config" {
     for_each = [0] // Always create this block as namespace_filters is required by the provider
     content {
-      enabled                       = var.metrics_collection_enabled
-      automute_enabled              = var.metrics_automute_enabled
-      collect_cloudwatch_alarms     = var.metrics_collect_cloudwatch_alarms
-      collect_custom_metrics        = var.metrics_collect_custom_metrics
+      enabled                   = var.metrics_collection_enabled
+      automute_enabled          = var.metrics_automute_enabled
+      collect_cloudwatch_alarms = var.metrics_collect_cloudwatch_alarms
+      collect_custom_metrics    = var.metrics_collect_custom_metrics
 
       dynamic "tag_filters" {
         for_each = var.filter_tags != null && length(var.filter_tags) > 0 ? [
@@ -89,8 +89,8 @@ resource "datadog_integration_aws_account" "integration" {
   }
 
   resources_config {
-    extended_collection                          = var.extended_resource_collection_enabled ? true : false
-    cloud_security_posture_management_collection = var.cspm_resource_collection_enabled ? true : false
+    extended_collection                          = var.extended_resource_collection_enabled
+    cloud_security_posture_management_collection = var.cspm_resource_collection_enabled
   }
 
   // Required blocks without parameters left empty
