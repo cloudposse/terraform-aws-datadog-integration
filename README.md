@@ -161,7 +161,19 @@ Review the [complete example](examples/complete) to see how to use this module.
 | <a name="input_environment"></a> [environment](#input\_environment) | ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
 | <a name="input_excluded_regions"></a> [excluded\_regions](#input\_excluded\_regions) | An array of AWS regions to exclude from metrics collection | `list(string)` | `null` | no |
 | <a name="input_extended_resource_collection_enabled"></a> [extended\_resource\_collection\_enabled](#input\_extended\_resource\_collection\_enabled) | Whether Datadog collects additional attributes and configuration information about the resources in your AWS account. Required for `cspm_resource_collection_enabled`. | `bool` | `null` | no |
-| <a name="input_filter_tags"></a> [filter\_tags](#input\_filter\_tags) | An array of EC2 tags (in the form `key:value`) that defines a filter that Datadog use when collecting metrics from EC2. Wildcards, such as ? (for single characters) and * (for multiple characters) can also be used | `list(string)` | `null` | no |
+| <a name="input_filter_tags"></a> [filter\_tags](#input\_filter\_tags) | A list of objects containing namespace and tags to filter metrics collection. Each object should have a namespace and a list of tags in the form `key:value`. For example:
+  ```hcl
+  filter_tags = [
+    {
+      namespace = "AWS/EC2"
+      tags      = ["environment:production", "region:us-east-1"]
+    },
+    {
+      namespace = "AWS/RDS"
+      tags      = ["db_type:postgres", "tier:database"]
+    }
+  ]
+  ``` | `list(object({ namespace = string, tags = list(string) }))` | `null` | no |
 | <a name="input_host_tags"></a> [host\_tags](#input\_host\_tags) | An array of tags (in the form `key:value`) to add to all hosts and metrics reporting through this integration | `list(string)` | `null` | no |
 | <a name="input_id_length_limit"></a> [id\_length\_limit](#input\_id\_length\_limit) | Limit `id` to this many characters (minimum 6).<br/>Set to `0` for unlimited length.<br/>Set to `null` for keep the existing setting, which defaults to `0`.<br/>Does not affect `id_full`. | `number` | `null` | no |
 | <a name="input_integrations"></a> [integrations](#input\_integrations) | DEPRECATED: Use the `policies` variable instead.<br/>List of AWS permission names to apply for different integrations (e.g. 'all', 'core') | `list(string)` | `null` | no |

@@ -67,12 +67,7 @@ resource "datadog_integration_aws_account" "integration" {
       collect_custom_metrics    = var.metrics_collect_custom_metrics
 
       dynamic "tag_filters" {
-        for_each = var.filter_tags != null && length(var.filter_tags) > 0 ? [
-          {
-            namespace = "*"
-            tags      = var.filter_tags
-          }
-        ] : []
+        for_each = var.filter_tags != null ? var.filter_tags : []
         content {
           namespace = tag_filters.value.namespace
           tags      = tag_filters.value.tags

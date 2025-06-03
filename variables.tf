@@ -31,8 +31,11 @@ variable "policies" {
 }
 
 variable "filter_tags" {
-  type        = list(string)
-  description = "An array of EC2 tags (in the form `key:value`) that defines a filter that Datadog use when collecting metrics from EC2. Wildcards, such as ? (for single characters) and * (for multiple characters) can also be used"
+  type = list(object({
+    namespace = string
+    tags      = list(string)
+  }))
+  description = "A list of objects containing namespace and tags to filter metrics collection. Each object should have a namespace and a list of tags in the form `key:value`."
   default     = null
 }
 
