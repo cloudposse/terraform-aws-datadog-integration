@@ -49,43 +49,96 @@ related:
     url: "https://github.com/cloudposse/terraform-aws-datadog-lambda-forwarder"
 # Short description of this project
 description: |-
-  Terraform module to configure [Datadog AWS integration](https://docs.datadoghq.com/api/v1/aws-integration/).
-# How to use this project
+  Terraform module to configure AWS integration with Datadog, enabling you to monitor your AWS resources through Datadog's platform.
+
 usage: |-
-  For a complete example, see [examples/complete](examples/complete).
+  This module helps set up the AWS integration with Datadog, enabling you to monitor your AWS resources through Datadog's platform.
 
-  For automated tests of the complete example using [bats](https://github.com/bats-core/bats-core) and [Terratest](https://github.com/gruntwork-io/terratest) (which tests and deploys the example on AWS), see [test](test).
+  ## Features
+  
+  - Configures AWS integration with Datadog
+  - Sets up IAM role for Datadog to assume
+  - Configures metrics collection with flexible filtering
+  - Supports CSPM (Cloud Security Posture Management) and extended resource collection
+  - Configures region-based filtering
 
-  **Note:** At the moment this module supports a limited set of IAM policies to support Datadog integrations. More can be added as needed.
-
-  ### Structure
-
-  This module aligns with [Datadog's documentation](https://docs.datadoghq.com/integrations/amazon_web_services/) by providing a `core-integration` policy for minimal permissions and additional policies for specific services. It also includes a `full-integration` policy (formerly `all`), encompassing all permissions listed under "All Permissions" for comprehensive coverage. The variable `var.integrations` is deprecated and replaced by `var.policies`, which supports Datadog-defined IAM policy names such as `core-integration`, `full-integration`, `resource-collection`, `CSPM`, `SecurityAudit`, and `everything`.
-
-  Policy files have been updated for clarity and functionality. The `full-integration` policy reflects Datadog’s latest permissions and replaces the former `all` policy. A new `resource-collection` policy has been added for resource-specific permissions, while the `SecurityAudit` policy attaches the AWS-managed role for compliance. Backward compatibility is maintained by mapping old `var.integrations` values to new `var.policies`, ensuring a seamless transition while supporting legacy configurations.```
-
-  ### Migration Guide
-
-  To migrate from the `v1.3.0` configuration, replace `var.integrations` with `var.policies` in your module usage. The values `"core"` and `"all"` previously used in `var.integrations` should be updated to `"core-integration"` and `"full-integration"`, respectively. If you were using `"CSPM"`, it now serves as an alias for `"SecurityAudit"`. Existing configurations will remain functional due to backward compatibility mappings, but updating to the new `var.policies` variable ensures alignment with the latest module structure and Datadog's documentation.
-
-  ### Installation
-
-  Include this module in your existing terraform code:
+  ## Usage
 
   ```hcl
-  module "datadog_integration" {
-    source = "cloudposse/datadog-integration/aws"
-    # Cloud Posse recommends pinning every module to a specific version
-    # version     = "x.x.x"
+  module "datadog_aws_integration" {
+    source = "."
 
-    namespace                  = "eg"
-    stage                      = "test"
-    name                       = "datadog"
-    policies                   = ["full-integration"]
+    enabled = true
+
+    # Datadog account ID
+    datadog_aws_account_id = "datadog-account-id"
+
+    # Optional: Host tags
+    host_tags = ["environment:prod", "team:dev"]
+
+    # Optional: Metrics collection settings
+    metrics_collection_enabled = true
+    metrics_automute_enabled = true
+    metrics_collect_cloudwatch_alarms = true
+    metrics_collect_custom_metrics = true
+
+    # Optional: Metrics filtering
+    namespace_filters_include_only = ["AWS/EC2", "AWS/RDS"]
+    namespace_filters_exclude_only = []
+
+    # Optional: Resource collection settings
+    extended_resource_collection_enabled = true
+    cspm_resource_collection_enabled = true
+
+    # Optional: Region filtering
+    excluded_regions = ["cn-north-1", "cn-northwest-1"]
   }
   ```
 
-  The DataDog integration will be linked with your configured datadog account via the provider's `api_key`.
+  ## Variables
+
+  - `enabled`: Whether to enable the integration (default: true)
+  - `datadog_aws_account_id`: The AWS account ID of your Datadog account
+  - `host_tags`: Optional list of tags to apply to the integration
+  - `metrics_collection_enabled`: Enable metrics collection (default: true)
+  - `metrics_automute_enabled`: Enable automute for metrics (default: true)
+  - `metrics_collect_cloudwatch_alarms`: Collect CloudWatch alarms (default: true)
+  - `metrics_collect_custom_metrics`: Collect custom metrics (default: true)
+  - `namespace_filters_include_only`: List of metric namespaces to include
+  - `namespace_filters_exclude_only`: List of metric namespaces to exclude
+  - `extended_resource_collection_enabled`: Enable extended resource collection (default: true)
+  - `cspm_resource_collection_enabled`: Enable CSPM resource collection (default: true)
+  - `excluded_regions`: List of AWS regions to exclude from integration
+
+  ## Outputs
+
+  - `iam_role_arn`: The ARN of the IAM role created for Datadog
+  - `external_id`: The external ID used for the IAM role trust relationship
+
+  ## IAM Role
+
+  The module creates an IAM role that Datadog can assume to collect metrics and logs from your AWS account. The role includes a trust relationship that allows Datadog's AWS account to assume the role with the proper external ID verification.
+
+  ## Region Filtering
+
+  The module supports region-based filtering through the `excluded_regions` variable. When regions are excluded:
+  - The `include_all` parameter is set to false
+  - The `include_only` parameter is set to the list of included regions
+
+  When no regions are excluded, `include_all` is set to true.
+
+  ## Metric Filtering
+
+  The module supports flexible metric filtering through:
+  - Namespace filters (include_only/exclude_only)
+  - Tag filters for specific metric namespaces
+
+  ## Security
+
+  The module implements security best practices by:
+  - Using external IDs for IAM role trust relationships
+  - Allowing only specific actions in the assume role policy
+  - Requiring proper verification of the Datadog AWS account
 examples: |-
   Review the [complete example](examples/complete) to see how to use this module.
 include: []
