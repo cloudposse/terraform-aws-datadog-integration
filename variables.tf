@@ -71,3 +71,62 @@ variable "extended_resource_collection_enabled" {
   description = "Whether Datadog collects additional attributes and configuration information about the resources in your AWS account. Required for `cspm_resource_collection_enabled`."
   default     = null
 }
+
+variable "namespaces" {
+  type        = list(string)
+  description = "An array of AWS namespaces to include in metrics collection"
+  default     = null
+}
+
+variable "tag_filters" {
+  type = list(object({
+    key   = string
+    value = string
+  }))
+  description = "An array of tag filters to apply to the metrics collection"
+  default     = []
+}
+
+variable "xray_services" {
+  type        = list(string)
+  description = "An array of AWS X-Ray services to include in metrics collection"
+  default     = null
+}
+
+variable "custom_metric_enabled" {
+  type        = bool
+  description = "Whether Datadog collects custom metrics for this AWS account."
+  default     = null
+}
+
+variable "cloudwatch_alarms_enabled" {
+  type        = bool
+  description = "Whether Datadog collects CloudWatch alarms for this AWS account."
+  default     = null
+}
+
+variable "automute_enabled" {
+  type        = bool
+  description = "Whether Datadog automutes CloudWatch alarms for this AWS account."
+  default     = null
+}
+
+variable "role_path" {
+  type        = string
+  description = "The path to the IAM role"
+  default     = "/"
+}
+
+variable "role_permissions_boundary" {
+  type        = string
+  description = "The ARN of the permissions boundary to use for the IAM role"
+  default     = null
+
+}
+
+variable "policy_path" {
+  type        = string
+  description = "The path to the IAM policy"
+  default     = "/"
+
+}

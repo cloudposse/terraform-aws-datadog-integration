@@ -66,6 +66,26 @@ usage: |-
 
   ### Migration Guide
 
+  #### Technical Details (BREAKING CHANGE v2.0.0 -> v3.0.0)
+
+  The module has been refactored to use `datadog_integration_aws_account` instead of the deprecated `datadog_integration_aws` resource. This architectural change affects all previous module versions and requires resource recreation.
+
+  #### Migration Impact
+
+  - Resource Replacement: The existing integration will be destroyed and recreated
+  - State Changes: Terraform will detect and handle state transitions
+  - Configuration Migration: Input variables are mapped to new resource schema
+
+  #### Compatibility Notes
+
+  - All existing configurations will be remapped to the new resource structure
+  - Input variables maintain backward compatibility through internal mapping
+  - State refresh will be required during upgrade
+
+  **Review Terraform plan outputs carefully before applying**
+
+  #### Migrating from v1.3.0 -> v2.0.0
+
   To migrate from the `v1.3.0` configuration, replace `var.integrations` with `var.policies` in your module usage. The values `"core"` and `"all"` previously used in `var.integrations` should be updated to `"core-integration"` and `"full-integration"`, respectively. If you were using `"CSPM"`, it now serves as an alias for `"SecurityAudit"`. Existing configurations will remain functional due to backward compatibility mappings, but updating to the new `var.policies` variable ensures alignment with the latest module structure and Datadog's documentation.
 
   ### Installation
