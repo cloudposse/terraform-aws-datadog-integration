@@ -270,6 +270,7 @@ resource "aws_iam_policy" "full_integration" {
   count  = local.full_integration_count
   name   = module.full_integration_label.id
   policy = join("", data.aws_iam_policy_document.full_integration[*].json)
+  path   = var.policy_path
   tags   = module.full_integration_label.tags
 }
 

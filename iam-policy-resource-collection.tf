@@ -50,6 +50,7 @@ resource "aws_iam_policy" "resource_collection" {
   count  = local.resource_collection_count
   name   = module.resource_collection_label.id
   policy = join("", data.aws_iam_policy_document.resource_collection[*].json)
+  path   = var.policy_path
   tags   = module.resource_collection_label.tags
 }
 
