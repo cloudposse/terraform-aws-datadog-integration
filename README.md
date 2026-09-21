@@ -49,6 +49,7 @@ We are grateful to Datadog for supporting our open source ecosystem and helping 
 ___
 
 
+
 > [!TIP]
 > #### 👽 Use Atmos with Terraform
 > Cloud Posse uses [`atmos`](https://atmos.tools) to easily orchestrate multiple environments using Terraform. <br/>
@@ -64,42 +65,96 @@ ___
 
 
 
+
 ## Usage
 
-For a complete example, see [examples/complete](examples/complete).
+This module helps set up the AWS integration with Datadog, enabling you to monitor your AWS resources through Datadog's platform.
 
-For automated tests of the complete example using [bats](https://github.com/bats-core/bats-core) and [Terratest](https://github.com/gruntwork-io/terratest) (which tests and deploys the example on AWS), see [test](test).
+## Features
 
-**Note:** At the moment this module supports a limited set of IAM policies to support Datadog integrations. More can be added as needed.
+- Configures AWS integration with Datadog
+- Sets up IAM role for Datadog to assume
+- Configures metrics collection with flexible filtering
+- Supports CSPM (Cloud Security Posture Management) and extended resource collection
+- Configures region-based filtering
 
-### Structure
-
-This module aligns with [Datadog's documentation](https://docs.datadoghq.com/integrations/amazon_web_services/) by providing a `core-integration` policy for minimal permissions and additional policies for specific services. It also includes a `full-integration` policy (formerly `all`), encompassing all permissions listed under "All Permissions" for comprehensive coverage. The variable `var.integrations` is deprecated and replaced by `var.policies`, which supports Datadog-defined IAM policy names such as `core-integration`, `full-integration`, `resource-collection`, `CSPM`, `SecurityAudit`, and `everything`.
-
-Policy files have been updated for clarity and functionality. The `full-integration` policy reflects Datadog’s latest permissions and replaces the former `all` policy. A new `resource-collection` policy has been added for resource-specific permissions, while the `SecurityAudit` policy attaches the AWS-managed role for compliance. Backward compatibility is maintained by mapping old `var.integrations` values to new `var.policies`, ensuring a seamless transition while supporting legacy configurations.```
-
-### Migration Guide
-
-To migrate from the `v1.3.0` configuration, replace `var.integrations` with `var.policies` in your module usage. The values `"core"` and `"all"` previously used in `var.integrations` should be updated to `"core-integration"` and `"full-integration"`, respectively. If you were using `"CSPM"`, it now serves as an alias for `"SecurityAudit"`. Existing configurations will remain functional due to backward compatibility mappings, but updating to the new `var.policies` variable ensures alignment with the latest module structure and Datadog's documentation.
-
-### Installation
-
-Include this module in your existing terraform code:
+## Usage
 
 ```hcl
-module "datadog_integration" {
-  source = "cloudposse/datadog-integration/aws"
-  # Cloud Posse recommends pinning every module to a specific version
-  # version     = "x.x.x"
+module "datadog_aws_integration" {
+  source = "."
 
-  namespace                  = "eg"
-  stage                      = "test"
-  name                       = "datadog"
-  policies                   = ["full-integration"]
+  enabled = true
+
+  # Datadog account ID
+  datadog_aws_account_id = "datadog-account-id"
+
+  # Optional: Host tags
+  host_tags = ["environment:prod", "team:dev"]
+
+  # Optional: Metrics collection settings
+  metrics_collection_enabled = true
+  metrics_automute_enabled = true
+  metrics_collect_cloudwatch_alarms = true
+  metrics_collect_custom_metrics = true
+
+  # Optional: Metrics filtering
+  namespace_filters_include_only = ["AWS/EC2", "AWS/RDS"]
+  namespace_filters_exclude_only = []
+
+  # Optional: Resource collection settings
+  extended_resource_collection_enabled = true
+  cspm_resource_collection_enabled = true
+
+  # Optional: Region filtering
+  excluded_regions = ["cn-north-1", "cn-northwest-1"]
 }
 ```
 
-The DataDog integration will be linked with your configured datadog account via the provider's `api_key`.
+## Variables
+
+- `enabled`: Whether to enable the integration (default: true)
+- `datadog_aws_account_id`: The AWS account ID of your Datadog account
+- `host_tags`: Optional list of tags to apply to the integration
+- `metrics_collection_enabled`: Enable metrics collection (default: true)
+- `metrics_automute_enabled`: Enable automute for metrics (default: true)
+- `metrics_collect_cloudwatch_alarms`: Collect CloudWatch alarms (default: true)
+- `metrics_collect_custom_metrics`: Collect custom metrics (default: true)
+- `namespace_filters_include_only`: List of metric namespaces to include
+- `namespace_filters_exclude_only`: List of metric namespaces to exclude
+- `extended_resource_collection_enabled`: Enable extended resource collection (default: true)
+- `cspm_resource_collection_enabled`: Enable CSPM resource collection (default: true)
+- `excluded_regions`: List of AWS regions to exclude from integration
+
+## Outputs
+
+- `iam_role_arn`: The ARN of the IAM role created for Datadog
+- `external_id`: The external ID used for the IAM role trust relationship
+
+## IAM Role
+
+The module creates an IAM role that Datadog can assume to collect metrics and logs from your AWS account. The role includes a trust relationship that allows Datadog's AWS account to assume the role with the proper external ID verification.
+
+## Region Filtering
+
+The module supports region-based filtering through the `excluded_regions` variable. When regions are excluded:
+- The `include_all` parameter is set to false
+- The `include_only` parameter is set to the list of included regions
+
+When no regions are excluded, `include_all` is set to true.
+
+## Metric Filtering
+
+The module supports flexible metric filtering through:
+- Namespace filters (include_only/exclude_only)
+- Tag filters for specific metric namespaces
+
+## Security
+
+The module implements security best practices by:
+- Using external IDs for IAM role trust relationships
+- Allowing only specific actions in the assume role policy
+- Requiring proper verification of the Datadog AWS account
 
 > [!IMPORTANT]
 > In Cloud Posse's examples, we avoid pinning modules to specific versions to prevent discrepancies between the documentation
@@ -122,7 +177,7 @@ Review the [complete example](examples/complete) to see how to use this module.
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.0 |
 | <a name="requirement_datadog"></a> [datadog](#requirement\_datadog) | >= 3.9 |
@@ -130,14 +185,14 @@ Review the [complete example](examples/complete) to see how to use this module.
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.0 |
 | <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.9 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_core_label"></a> [core\_label](#module\_core\_label) | cloudposse/label/null | 0.25.0 |
 | <a name="module_full_integration_label"></a> [full\_integration\_label](#module\_full\_integration\_label) | cloudposse/label/null | 0.25.0 |
 | <a name="module_resource_collection_label"></a> [resource\_collection\_label](#module\_resource\_collection\_label) | cloudposse/label/null | 0.25.0 |
@@ -146,7 +201,7 @@ Review the [complete example](examples/complete) to see how to use this module.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_iam_policy.core](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.full_integration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.resource_collection](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
@@ -163,12 +218,13 @@ Review the [complete example](examples/complete) to see how to use this module.
 | [aws_iam_policy_document.full_integration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.resource_collection](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+| [aws_regions.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/regions) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_account_specific_namespace_rules"></a> [account\_specific\_namespace\_rules](#input\_account\_specific\_namespace\_rules) | **DEPRECATED for `datadog_integration_aws_account`**. Was: An object, (in the form `{"namespace1":true/false, "namespace2":true/false}`), that enables or disables metric collection for specific AWS namespaces. For `datadog_integration_aws_account`, use `namespace_filters_include_only` or `namespace_filters_exclude_only`. | `map(string)` | `null` | no |
+| ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_account_specific_namespace_rules"></a> [account\_specific\_namespace\_rules](#input\_account\_specific\_namespace\_rules) | (DEPRECATED for new resource) An object, (in the form {"namespace1":true/false, "namespace2":true/false} ), that enables or disables metric collection for specific AWS namespaces for this AWS account only. For the datadog\_integration\_aws\_account resource, use 'namespace\_filters\_include\_only' or 'namespace\_filters\_exclude\_only'. | `map(string)` | `null` | no |
 | <a name="input_additional_tag_map"></a> [additional\_tag\_map](#input\_additional\_tag\_map) | Additional key-value pairs to add to each map in `tags_as_list_of_maps`. Not added to `tags` or `id`.<br/>This is for some rare cases where resources want additional configuration of tags<br/>and therefore take a list of maps with tag key, value, and additional configuration. | `map(string)` | `{}` | no |
 | <a name="input_attributes"></a> [attributes](#input\_attributes) | ID element. Additional attributes (e.g. `workers` or `cluster`) to add to `id`,<br/>in the order they appear in the list. New attributes are appended to the<br/>end of the list. The elements of the list are joined by the `delimiter`<br/>and treated as a single ID element. | `list(string)` | `[]` | no |
 | <a name="input_context"></a> [context](#input\_context) | Single object for setting entire context at once.<br/>See description of individual variables for details.<br/>Leave string and numeric variables as `null` to use default value.<br/>Individual variable settings (non-null) override settings in context object,<br/>except for attributes, tags, and additional\_tag\_map, which are merged. | `any` | <pre>{<br/>  "additional_tag_map": {},<br/>  "attributes": [],<br/>  "delimiter": null,<br/>  "descriptor_formats": {},<br/>  "enabled": true,<br/>  "environment": null,<br/>  "id_length_limit": null,<br/>  "label_key_case": null,<br/>  "label_order": [],<br/>  "label_value_case": null,<br/>  "labels_as_tags": [<br/>    "unset"<br/>  ],<br/>  "name": null,<br/>  "namespace": null,<br/>  "regex_replace_chars": null,<br/>  "stage": null,<br/>  "tags": {},<br/>  "tenant": null<br/>}</pre> | no |
@@ -179,8 +235,8 @@ Review the [complete example](examples/complete) to see how to use this module.
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
 | <a name="input_excluded_regions"></a> [excluded\_regions](#input\_excluded\_regions) | An array of AWS regions to exclude from metrics collection | `list(string)` | `null` | no |
-| <a name="input_extended_resource_collection_enabled"></a> [extended\_resource\_collection\_enabled](#input\_extended\_resource\_collection\_enabled) | Whether Datadog collects additional attributes and configuration information about the resources in your AWS account. Required for `cspm_resource_collection_enabled`. | `bool` | `null` | no |
-| <a name="input_filter_tags"></a> [filter\_tags](#input\_filter\_tags) | A list of objects containing namespace and tags to filter metrics collection. Each object should have a namespace and a list of tags in the form `key:value`.<br>For example:<br> `filter_tags = [{namespace = "AWS/EC2", tags = ["environment:production", "region:us-east-1"]},{namespace = "AWS/RDS",tags = ["db_type:postgres", "tier:database"]}]` | `list(object({ namespace = string, tags = list(string) }))` | `null` | no |
+| <a name="input_extended_resource_collection_enabled"></a> [extended\_resource\_collection\_enabled](#input\_extended\_resource\_collection\_enabled) | Whether Datadog collects additional attributes and configuration information about the resources in your AWS account. Required for `cspm_resource_collection_enabled`. | `bool` | `true` | no |
+| <a name="input_filter_tags"></a> [filter\_tags](#input\_filter\_tags) | A list of objects containing namespace and tags to filter metrics collection. Each object should have a namespace and a list of tags in the form `key:value`. | <pre>list(object({<br/>    namespace = string<br/>    tags      = list(string)<br/>  }))</pre> | `null` | no |
 | <a name="input_host_tags"></a> [host\_tags](#input\_host\_tags) | An array of tags (in the form `key:value`) to add to all hosts and metrics reporting through this integration | `list(string)` | `null` | no |
 | <a name="input_id_length_limit"></a> [id\_length\_limit](#input\_id\_length\_limit) | Limit `id` to this many characters (minimum 6).<br/>Set to `0` for unlimited length.<br/>Set to `null` for keep the existing setting, which defaults to `0`.<br/>Does not affect `id_full`. | `number` | `null` | no |
 | <a name="input_integrations"></a> [integrations](#input\_integrations) | DEPRECATED: Use the `policies` variable instead.<br/>List of AWS permission names to apply for different integrations (e.g. 'all', 'core') | `list(string)` | `null` | no |
@@ -188,14 +244,14 @@ Review the [complete example](examples/complete) to see how to use this module.
 | <a name="input_label_order"></a> [label\_order](#input\_label\_order) | The order in which the labels (ID elements) appear in the `id`.<br/>Defaults to ["namespace", "environment", "stage", "name", "attributes"].<br/>You can omit any of the 6 labels ("tenant" is the 6th), but at least one must be present. | `list(string)` | `null` | no |
 | <a name="input_label_value_case"></a> [label\_value\_case](#input\_label\_value\_case) | Controls the letter case of ID elements (labels) as included in `id`,<br/>set as tag values, and output by this module individually.<br/>Does not affect values of tags passed in via the `tags` input.<br/>Possible values: `lower`, `title`, `upper` and `none` (no transformation).<br/>Set this to `title` and set `delimiter` to `""` to yield Pascal Case IDs.<br/>Default value: `lower`. | `string` | `null` | no |
 | <a name="input_labels_as_tags"></a> [labels\_as\_tags](#input\_labels\_as\_tags) | Set of labels (ID elements) to include as tags in the `tags` output.<br/>Default is to include all labels.<br/>Tags with empty values will not be included in the `tags` output.<br/>Set to `[]` to suppress all generated tags.<br/>**Notes:**<br/>  The value of the `name` tag, if included, will be the `id`, not the `name`.<br/>  Unlike other `null-label` inputs, the initial setting of `labels_as_tags` cannot be<br/>  changed in later chained modules. Attempts to change it will be silently ignored. | `set(string)` | <pre>[<br/>  "default"<br/>]</pre> | no |
-| <a name="input_metrics_collection_enabled"></a> [metrics\_collection\_enabled](#input\_metrics\_collection\_enabled) | Whether Datadog collects metrics for this AWS account. If `null`, the `metrics_config.enabled` attribute is omitted, and provider defaults apply if the `metrics_config` block is active. | `bool` | `null` | no |
 | <a name="input_metrics_automute_enabled"></a> [metrics\_automute\_enabled](#input\_metrics\_automute\_enabled) | Enable EC2 automute for AWS metrics. | `bool` | `true` | no |
 | <a name="input_metrics_collect_cloudwatch_alarms"></a> [metrics\_collect\_cloudwatch\_alarms](#input\_metrics\_collect\_cloudwatch\_alarms) | Enable CloudWatch alarms collection. | `bool` | `false` | no |
 | <a name="input_metrics_collect_custom_metrics"></a> [metrics\_collect\_custom\_metrics](#input\_metrics\_collect\_custom\_metrics) | Enable custom metrics collection. | `bool` | `false` | no |
-| <a name="input_namespace_filters_exclude_only"></a> [namespace\_filters\_exclude\_only](#input\_namespace\_filters\_exclude\_only) | Exclude only these namespaces from metrics collection. Mutually exclusive with `namespace_filters_include_only`. If not set and `include_only` is not set, the provider defaults to excluding `["AWS/SQS", "AWS/ElasticMapReduce"]` if the `metrics_config.namespace_filters` block is active. | `list(string)` | `null` | no |
-| <a name="input_namespace_filters_include_only"></a> [namespace\_filters\_include\_only](#input\_namespace\_filters\_include\_only) | Include only these namespaces for metrics collection. Mutually exclusive with `namespace_filters_exclude_only`. | `list(string)` | `null` | no |
+| <a name="input_metrics_collection_enabled"></a> [metrics\_collection\_enabled](#input\_metrics\_collection\_enabled) | Whether Datadog collects metrics for this AWS account. If null, the provider default is used if the metrics\_config block is active. | `bool` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'.<br/>This is the only ID element not also included as a `tag`.<br/>The "name" tag is set to the full `id` string. There is no tag with the value of the `name` input. | `string` | `null` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique | `string` | `null` | no |
+| <a name="input_namespace_filters_exclude_only"></a> [namespace\_filters\_exclude\_only](#input\_namespace\_filters\_exclude\_only) | Exclude only these namespaces from metrics collection. Mutually exclusive with namespace\_filters\_include\_only. If not set and include\_only is not set, the provider defaults to excluding ["AWS/SQS", "AWS/ElasticMapReduce"] if the namespace\_filters block is active. Use 'datadog\_integration\_aws\_available\_namespaces' data source to discover available values. | `list(string)` | `null` | no |
+| <a name="input_namespace_filters_include_only"></a> [namespace\_filters\_include\_only](#input\_namespace\_filters\_include\_only) | Include only these namespaces for metrics collection. Mutually exclusive with namespace\_filters\_exclude\_only. Use 'datadog\_integration\_aws\_available\_namespaces' data source to discover available values. | `list(string)` | `null` | no |
 | <a name="input_policies"></a> [policies](#input\_policies) | List of Datadog's names for AWS IAM policies names to apply to the role.<br/>Valid options are "core-integration", "full-integration", "resource-collection", "CSPM", "SecurityAudit", "everything".<br/>"CSPM" is for Cloud Security Posture Management, which also requires "full-integration".<br/>"SecurityAudit" is for the AWS-managed `SecurityAudit` Policy.<br/>"everything" means all permissions for offerings. | `list(string)` | `[]` | no |
 | <a name="input_regex_replace_chars"></a> [regex\_replace\_chars](#input\_regex\_replace\_chars) | Terraform regular expression (regex) string.<br/>Characters matching the regex will be removed from the ID elements.<br/>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
 | <a name="input_resource_collection_enabled"></a> [resource\_collection\_enabled](#input\_resource\_collection\_enabled) | DEPRECATED: Use the `extended_resource_collection_enabled` variables instead.<br/>Whether Datadog collects a standard set of resources from your AWS account. | `bool` | `null` | no |
@@ -207,7 +263,7 @@ Review the [complete example](examples/complete) to see how to use this module.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_aws_account_id"></a> [aws\_account\_id](#output\_aws\_account\_id) | AWS Account ID of the IAM Role for Datadog to use for this integration |
 | <a name="output_aws_role_arn"></a> [aws\_role\_arn](#output\_aws\_role\_arn) | ARN of the AWS IAM Role for Datadog to use for this integration |
 | <a name="output_aws_role_name"></a> [aws\_role\_name](#output\_aws\_role\_name) | Name of the AWS IAM Role for Datadog to use for this integration |
@@ -376,7 +432,7 @@ All other trademarks referenced herein are the property of their respective owne
 
 
 ---
-Copyright © 2017-2025 [Cloud Posse, LLC](https://cpco.io/copyright)
+Copyright © 2017-2026 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 <a href="https://cloudposse.com/readme/footer/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-datadog-integration&utm_content=readme_footer_link"><img alt="README footer" src="https://cloudposse.com/readme/footer/img"/></a>
