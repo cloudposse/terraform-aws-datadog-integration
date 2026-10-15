@@ -55,6 +55,11 @@ resource "datadog_integration_aws_account" "integration" {
   auth_config {
     aws_auth_config_role {
       role_name = module.this.id
+      // Without this the attribute is Optional+Computed, so Datadog generates its own
+      // external ID on create. The trust policy below is written from
+      // datadog_integration_aws_external_id, so the two never match and every
+      // AssumeRole is rejected.
+      external_id = local.datadog_external_id
     }
   }
 
