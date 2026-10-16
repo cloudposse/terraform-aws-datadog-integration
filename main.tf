@@ -93,12 +93,22 @@ resource "datadog_integration_aws_account" "integration" {
     cloud_security_posture_management_collection = var.cspm_resource_collection_enabled
   }
 
-  // Required blocks without parameters left empty
+  // The provider requires both blocks, so they cannot be omitted. They can be populated though,
+  // and leaving them empty is not neutral: it makes this resource the owner of log and trace
+  // collection and forces both to empty, silently reverting whatever configured them on every
+  // apply. A Lambda forwarder deployed separately is the usual casualty. Both default to null,
+  // which reproduces the previous behaviour exactly.
   logs_config {
-    lambda_forwarder {}
+    lambda_forwarder {
+      lambdas = var.logs_config_lambda_forwarder_lambdas
+      sources = var.logs_config_lambda_forwarder_sources
+    }
   }
   traces_config {
-    xray_services {}
+    xray_services {
+      include_all  = var.traces_config_xray_services_include_all
+      include_only = var.traces_config_xray_services_include_only
+    }
   }
 }
 

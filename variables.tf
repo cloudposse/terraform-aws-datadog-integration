@@ -106,3 +106,41 @@ variable "extended_resource_collection_enabled" {
   description = "Whether Datadog collects additional attributes and configuration information about the resources in your AWS account. Required for `cspm_resource_collection_enabled`."
   default     = true
 }
+
+variable "logs_config_lambda_forwarder_lambdas" {
+  type        = list(string)
+  default     = null
+  description = <<-EOT
+    ARNs of the Lambda forwarders that ship logs for this account. The provider requires the
+    `logs_config.lambda_forwarder` block, and leaving it unpopulated sets both this and `sources`
+    to empty, which reverts a forwarder configured anywhere else on every apply. Set this to take
+    ownership of log collection here, or leave it null to keep the previous behaviour.
+  EOT
+}
+
+variable "logs_config_lambda_forwarder_sources" {
+  type        = list(string)
+  default     = null
+  description = <<-EOT
+    AWS log sources to collect, for example `elb`, `s3` or `lambda`. See
+    `logs_config_lambda_forwarder_lambdas` for why leaving this null is not neutral.
+  EOT
+}
+
+variable "traces_config_xray_services_include_all" {
+  type        = bool
+  default     = null
+  description = <<-EOT
+    Collect X-Ray traces from every service in the account. Mutually exclusive with
+    `traces_config_xray_services_include_only`.
+  EOT
+}
+
+variable "traces_config_xray_services_include_only" {
+  type        = list(string)
+  default     = null
+  description = <<-EOT
+    Collect X-Ray traces from only these services. Mutually exclusive with
+    `traces_config_xray_services_include_all`.
+  EOT
+}
