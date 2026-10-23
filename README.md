@@ -182,13 +182,6 @@ Review the [complete example](examples/complete) to see how to use this module.
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.0 |
 | <a name="requirement_datadog"></a> [datadog](#requirement\_datadog) | >= 3.9 |
 
-## Providers
-
-| Name | Version |
-| ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.0 |
-| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.9 |
-
 ## Modules
 
 | Name | Source | Version |
@@ -244,6 +237,8 @@ Review the [complete example](examples/complete) to see how to use this module.
 | <a name="input_label_order"></a> [label\_order](#input\_label\_order) | The order in which the labels (ID elements) appear in the `id`.<br/>Defaults to ["namespace", "environment", "stage", "name", "attributes"].<br/>You can omit any of the 6 labels ("tenant" is the 6th), but at least one must be present. | `list(string)` | `null` | no |
 | <a name="input_label_value_case"></a> [label\_value\_case](#input\_label\_value\_case) | Controls the letter case of ID elements (labels) as included in `id`,<br/>set as tag values, and output by this module individually.<br/>Does not affect values of tags passed in via the `tags` input.<br/>Possible values: `lower`, `title`, `upper` and `none` (no transformation).<br/>Set this to `title` and set `delimiter` to `""` to yield Pascal Case IDs.<br/>Default value: `lower`. | `string` | `null` | no |
 | <a name="input_labels_as_tags"></a> [labels\_as\_tags](#input\_labels\_as\_tags) | Set of labels (ID elements) to include as tags in the `tags` output.<br/>Default is to include all labels.<br/>Tags with empty values will not be included in the `tags` output.<br/>Set to `[]` to suppress all generated tags.<br/>**Notes:**<br/>  The value of the `name` tag, if included, will be the `id`, not the `name`.<br/>  Unlike other `null-label` inputs, the initial setting of `labels_as_tags` cannot be<br/>  changed in later chained modules. Attempts to change it will be silently ignored. | `set(string)` | <pre>[<br/>  "default"<br/>]</pre> | no |
+| <a name="input_logs_config_lambda_forwarder_lambdas"></a> [logs\_config\_lambda\_forwarder\_lambdas](#input\_logs\_config\_lambda\_forwarder\_lambdas) | ARNs of the Lambda forwarders that ship logs for this account. The provider requires the<br/>`logs_config.lambda_forwarder` block, and leaving it unpopulated sets both this and `sources`<br/>to empty, which reverts a forwarder configured anywhere else on every apply. Set this to take<br/>ownership of log collection here, or leave it null to keep the previous behaviour. | `list(string)` | `null` | no |
+| <a name="input_logs_config_lambda_forwarder_sources"></a> [logs\_config\_lambda\_forwarder\_sources](#input\_logs\_config\_lambda\_forwarder\_sources) | AWS log sources to collect, for example `elb`, `s3` or `lambda`. See<br/>`logs_config_lambda_forwarder_lambdas` for why leaving this null is not neutral. | `list(string)` | `null` | no |
 | <a name="input_metrics_automute_enabled"></a> [metrics\_automute\_enabled](#input\_metrics\_automute\_enabled) | Enable EC2 automute for AWS metrics. | `bool` | `true` | no |
 | <a name="input_metrics_collect_cloudwatch_alarms"></a> [metrics\_collect\_cloudwatch\_alarms](#input\_metrics\_collect\_cloudwatch\_alarms) | Enable CloudWatch alarms collection. | `bool` | `false` | no |
 | <a name="input_metrics_collect_custom_metrics"></a> [metrics\_collect\_custom\_metrics](#input\_metrics\_collect\_custom\_metrics) | Enable custom metrics collection. | `bool` | `false` | no |
@@ -259,6 +254,8 @@ Review the [complete example](examples/complete) to see how to use this module.
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br/>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
+| <a name="input_traces_config_xray_services_include_all"></a> [traces\_config\_xray\_services\_include\_all](#input\_traces\_config\_xray\_services\_include\_all) | Collect X-Ray traces from every service in the account. Mutually exclusive with<br/>`traces_config_xray_services_include_only`. | `bool` | `null` | no |
+| <a name="input_traces_config_xray_services_include_only"></a> [traces\_config\_xray\_services\_include\_only](#input\_traces\_config\_xray\_services\_include\_only) | Collect X-Ray traces from only these services. Mutually exclusive with<br/>`traces_config_xray_services_include_all`. | `list(string)` | `null` | no |
 
 ## Outputs
 
